@@ -184,12 +184,6 @@ Displays arguments and return value of this method (only primitive datatypes and
 Sets the argument number <NumberOfArgToModify> to <newValue> (only primitive datatypes and String)
 If <NumberOfArgToModify> > <NumberOfArgs>: sets the return value 
 
-    java -jar AndroTickler.jar -pkg <package> -frida unpin <CertificateLocation>
-SSL pinning circumvention as in https://codeshare.frida.re/@pcipolloni/universal-android-ssl-pinning-bypass-with-frida/. 
-It circumvents Pinning of SSLContext only. Providing a general method to overcome OKHTTP pinning is still in progress.
-
-<CertificateLocation> is the location of your Certificate on your host
-
 
     java -jar AndroTickler.jar -pkg <package> -frida script <scriptPath> <arguments>
 
