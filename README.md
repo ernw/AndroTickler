@@ -1,7 +1,7 @@
 **AndroTickler**
 =================
 
-A java tool that helps to pentest Android apps faster, more easily and more efficiently. AndroTickler offers many features of information gathering, static and dynamic checks that cover most of the aspects of Android apps pentesting. It also offers several features that pentesters need during their pentests. AndroTickler also integrates with Frida to provide method manipulation and pinning circumvention. It was previously published under the name of Tickler.
+A java tool that helps to pentest Android apps faster, more easily and more efficiently. AndroTickler offers many features of information gathering, static and dynamic checks that cover most of the aspects of Android apps pentesting. It also offers several features that pentesters need during their pentests. AndroTickler also integrates with Frida to provide method tracing and manipulation. It was previously published under the name of **Tickler**.
 
 AndroTickler requires a linux host and a rooted Android device connected to its USB port. The tool does not install anything on the Android device, it only creates a *Tickler* directory on /sdcard . AndroTickler depends on Android SDK to run commands on the device and copy app's data to *TicklerWorkspace* directory on the host for further analysis. *TicklerWorkspace* is the working directory of AndroTickler and each app has a separate subdirectory in *TicklerWorkspace* which can contain the following (depending on user actions):
 - DataDir directory: a copy of the data directory of the app
@@ -29,7 +29,7 @@ Other tools are required for some features, but AndroTickler can still run witho
 How to use it
 =============
 1) Build tool from code
-2) Make sure Tickler.jar is in the same directory as Tickler_lib directory and Tickler.conf file
+2) Make sure AndroTickler.jar is in the same directory as Tickler_lib directory and Tickler.conf file
 3) Connect your Android device with the application-to-test installed on   
 
 
@@ -38,20 +38,20 @@ The current version does the following:
 Command help
 =============
 
-    java -jar Tickler.jar -h
+    java -jar AndroTickler.jar -h
 
 Information gathering/Static analysis:
 ======================================
 
-    java -jar Tickler.jar -pkgs
+    java -jar AndroTickler.jar -pkgs
 Lists installed Apps on the device	
 
 
-    java -jar Tickler.jar -findPkg <searchKey>
+    java -jar AndroTickler.jar -findPkg <searchKey>
 Searches for an app (package) installed on the device, whose package name contains the searchKey
 
 
-    java -jar Tickler.jar -pkg <package> [other options]
+    java -jar AndroTickler.jar -pkg <package> [other options]
 Any command with a -pkg option (whether used with any of the following options or not), does the following actions if they have not been done before:
 - Copies the app from the device
 - Extracts the Manifest file of the app
@@ -59,7 +59,7 @@ Any command with a -pkg option (whether used with any of the following options o
 
 .
 
-    java -jar Tickler.jar -pkg <package> -info
+    java -jar AndroTickler.jar -pkg <package> -info
 
 Returns the following information:
 - App's user ID
@@ -74,7 +74,7 @@ Returns the following information:
 
 .
 
-    java -jar Tickler.jar -pkg <package> -squeeze
+    java -jar AndroTickler.jar -pkg <package> -squeeze
 
 Fetches the following from the decompiled Java code of the app:
 - Log messages
@@ -85,13 +85,13 @@ Fetches the following from the decompiled Java code of the app:
 Unsurprisingly, its output is usually huge, so it is recommended to redirect the command's output to a file
 
 
-    java -jar Tickler.jar -pkg <package> -l [-exp]
+    java -jar AndroTickler.jar -pkg <package> -l [-exp]
 Lists all components of the app 
 
 -exp: show only exported components
 
 
-    java -jar Tickler.jar -pkg <package> -l [-act | -ser | -rec | -prov ] [-exp] [-v]
+    java -jar AndroTickler.jar -pkg <package> -l [-act | -ser | -rec | -prov ] [-exp] [-v]
 
 Lists any kind of components
 - -act : activities
@@ -107,38 +107,38 @@ Lists any kind of components
 
 .
 
-    java -jar Tickler.jar -pkg <package> -db [ |e]
+    java -jar AndroTickler.jar -pkg <package> -db [ |e]
 	
 Tests whether the databases of the app are encrypted. It is the default action in case no option is given after -db flag.
 
 By default, all -db commands update the app's data directory on the host before running the check.
 
 
-    java -jar Tickler.jar -pkg <package> -db [l]
+    java -jar AndroTickler.jar -pkg <package> -db [l]
 Lists all databases of the app. Encrypted databases might not be detected.
 
-    java -jar Tickler.jar -pkg <package> -db [d]
+    java -jar AndroTickler.jar -pkg <package> -db [d]
 	
 Takes a sqlite dump of any of the unencrypted databases.
 
-    java -jar Tickler.jar -pkg <package> -db [|e|l|d] [nu|noUpdate]
+    java -jar AndroTickler.jar -pkg <package> -db [|e|l|d] [nu|noUpdate]
     
 nu or noUpdate runs any of the above options without updating the app's data directory on the host.
 
-    java -jar Tickler.jar -pkg <package> -diff
+    java -jar AndroTickler.jar -pkg <package> -diff
 	
 Copies the data directory of the app (to DataDirOld) then asks the user to do the action he wants and to press Enter when he's done. Then it copies the data directory again (to DataDir) and runs diff between them to show which files got added, deleted or modified. 
 
-    java -jar Tickler.jar -pkg <package> -diff [d|detailed]
+    java -jar AndroTickler.jar -pkg <package> -diff [d|detailed]
 Does the same as the normal -diff command, also shows what exactly changed in text files and unencrypted databases.
 
-    java -jar Tickler.jar -pkg <package> -sc <key>
+    java -jar AndroTickler.jar -pkg <package> -sc <key>
 Searches the decompiled Java code of the app for the given key
 
-    java -jar Tickler.jar -pkg <package> -sd <key>
+    java -jar AndroTickler.jar -pkg <package> -sd <key>
 Searches the Data directory of the app for the given key
 
-    java -jar Tickler.jar [-pkg <package>] [-bg|--bgSnapshots]
+    java -jar AndroTickler.jar [-pkg <package>] [-bg|--bgSnapshots]
 Copies the background snapshots taken by the device (works with and without -pkg option)
 
 Tickling
@@ -149,7 +149,7 @@ if the -exp option is used, then the components will be triggered without root p
 
 Before triggering components, AndroTickler prints all the commands to be executed. Then for each command, it triggers the component, prints the command then waits for the user. This gives the user enough time to do any extra checks after the command's execution. Before the user moves on to the next command, he's given the option to capture a screenshot of the device for PoC documentation.
 
-    java -jar Tickler.jar -pkg <package> -t [-all | -exp] [target] [-log]
+    java -jar AndroTickler.jar -pkg <package> -t [-all | -exp] [target] [-log]
 Triggers the targets as explained above.
 
 [target] as in list command, the targets can be:
@@ -174,58 +174,61 @@ Frida:
 ======
 Frida should be installed on your host machine. Also the location of Frida server on the Android device should be added to *Tickler.conf* file.
 
-    java -jar Tickler.jar -pkg <package> -frida enum
+    java -jar AndroTickler.jar -pkg <package> -frida enum
 Enumerates loaded classes
 
-    java -jar Tickler.jar -pkg <package> -frida vals <ClassName> <MethodName> <NumberOfArgs> [-reuse]
+    java -jar AndroTickler.jar -pkg <package> -frida vals <ClassName> <MethodName> <NumberOfArgs> [-reuse]
 Displays arguments and return value of this method (only primitive datatypes and String)
 
-    java -jar Tickler.jar -pkg <package> -frida set <ClassName> <MethodName> <NumberOfArgs> <NumberOfArgToModify> <newValue>[-reuse]
+    java -jar AndroTickler.jar -pkg <package> -frida set <ClassName> <MethodName> <NumberOfArgs> <NumberOfArgToModify> <newValue>[-reuse]
 Sets the argument number <NumberOfArgToModify> to <newValue> (only primitive datatypes and String)
 If <NumberOfArgToModify> > <NumberOfArgs>: sets the return value 
 
-    java -jar Tickler.jar -pkg <package> -frida unpin <CertificateLocation>
-SSL pinning circumvention as in https://codeshare.frida.re/@pcipolloni/universal-android-ssl-pinning-bypass-with-frida/
+    java -jar AndroTickler.jar -pkg <package> -frida unpin <CertificateLocation>
+SSL pinning circumvention as in https://codeshare.frida.re/@pcipolloni/universal-android-ssl-pinning-bypass-with-frida/. 
+It circumvents Pinning of SSLContext only. Providing a general method to overcome OKHTTP pinning is still in progress.
+
 <CertificateLocation> is the location of your Certificate on your host
 
-<<<<<<< HEAD
-    java -jar Tickler.jar -pkg <package> -frida script <scriptPath> <arguments>
+
+    java -jar AndroTickler.jar -pkg <package> -frida script <scriptPath> <arguments>
+
 Run custom frida JS script 
-=======
-    java -jar Tickler.jar -pkg <package> -frida script <scriptPath>
+
+    java -jar AndroTickler.jar -pkg <package> -frida script <scriptPath>
 Runs a frida JS script located at <scriptPath> on your host
->>>>>>> b6c650e4cb53a65a05a50a95ecd128751aa56f91
+
  
 In case of vals and set options, Frida creates/updates a Frida script of that functionality. You can modify the created script as you want, then if you want to run it through AndroTickler, then use *-reuse* option so that it doesn't get overridden.
 
 Other Features
 ================= 
 
-    java -jar Tickler.jar -pkg <package> -dbg
+    java -jar AndroTickler.jar -pkg <package> -dbg
 Creates a debuggable version of the app, which can be installed on the device and debugged using any external tool.
 
 AndroTickler comes with a keystore to sign the debuggable apk, but it requires *jarsigner* tool on the host.
 
-    java -jar Tickler.jar -pkg <package> -apk <decompiledDirectory>
+    java -jar AndroTickler.jar -pkg <package> -apk <decompiledDirectory>
 Builds an apk file from a directory, signs it and installs it.
 
-    java -jar Tickler.jar -pkg <package> -mitm
+    java -jar AndroTickler.jar -pkg <package> -mitm
 Modifies Network security configuration of the app to circumvent MitM restrictions on Android Nougat (not related to pinning) 
 
-    java -jar Tickler.jar -pkg <package> -cp2host <source_path> [dest]
+    java -jar AndroTickler.jar -pkg <package> -cp2host <source_path> [dest]
 Copies files / directories from the android devices. 
 - source_path is the absolute location of what you want to copy from the android device
 - dest: optional name of the destination directory, which will be located anyway at *transfers* sudirectory. 
 
 If dest option is not given then the directory's name will be the timestamp of the transaction. 
 
-    java -jar Tickler.jar [-pkg <package>] -screen
+    java -jar AndroTickler.jar [-pkg <package>] -screen
 - Captures the current screenshot of the device and saves them in *images* subdirectory
 - Works with or without the package flag
 
 .
 
-    java -jar Tickler.jar [-pkg <package>] [-bg |--bgSnapshots]
+    java -jar AndroTickler.jar [-pkg <package>] [-bg |--bgSnapshots]
 - Copies all background snapshots saved on the device (related to the app or not) to *bgSnapshots* subdirectory.
 
 Note
@@ -237,13 +240,13 @@ For the options that do not require -pkg option, their data will be saved at  *T
 Examples:
 ---------
 
-    java -jar Tickler.jar -pkg <package> -t  -act -exp
+    java -jar AndroTickler.jar -pkg <package> -t  -act -exp
 Triggers exported activities
 
-    java -jar Tickler.jar -pkg <package> -t -prov -log
+    java -jar AndroTickler.jar -pkg <package> -t -prov -log
 Queries all content providers and saves logcat messages until the tool stops execution
 
-    java -jar Tickler.jar -pkg <package> -t <component_name> 
+    java -jar AndroTickler.jar -pkg <package> -t <component_name> 
 Triggers the component, type of triggering depends on the type of the component
 
 
