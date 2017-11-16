@@ -1,0 +1,33 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+repositories {
+    jcenter()
+ mavenCentral()
+}
+
+
+dependencies {
+
+    compile 'org.slf4j:slf4j-api:1.7.13'
+    compile files('libs/jars/commons-cli-1.3.jar')
+    compile files('libs/jars/commons-io-2.4.jar')
+    compile files('libs/jars/apktool_2.2.2.jar')
+    compile files('libs/jars/commons-codec-1.10.jar')
+    compile files('libs/jars/jd-core-java-1.2.jar')
+    runtime files('libs/jars/commons-cli-1.3.jar')
+    runtime fileTree(dir: 'libs/jars', include: '*.jar')
+}
+
+jar {
+	baseName='AndroTickler'
+  	manifest {
+    		attributes(
+      			'Class-Path': configurations.compile.collect { it.getName() }.join(' '),
+      			'Main-Class': 'cliGui.TicklerCLI'
+    		)
+  	}
+	
+	    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+     }
+
