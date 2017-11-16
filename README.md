@@ -29,7 +29,7 @@ Other tools are required for some features, but AndroTickler can still run witho
 How to use it
 =============
 1) Build tool from code
-2) Make sure AndroTickler.jar is in the same directory as Tickler_lib directory and Tickler.conf file
+2) Move AndroTickler.jar is to the same directory as Tickler_lib directory and Tickler.conf file (automatically created in build/libs)
 3) Connect your Android device with the application-to-test installed on   
 
 
@@ -47,8 +47,10 @@ Information gathering/Static analysis:
 Lists installed Apps on the device	
 
 
+
     java -jar AndroTickler.jar -findPkg <searchKey>
 Searches for an app (package) installed on the device, whose package name contains the searchKey
+
 
 
     java -jar AndroTickler.jar -pkg <package> [other options]
@@ -74,21 +76,44 @@ Returns the following information:
 
 .
 
-    java -jar AndroTickler.jar -pkg <package> -squeeze
+##Code Squeezing
+
+    java -jar AndroTickler.jar -pkg <package> -squeeze [short | <codeLocation> ]
 
 Fetches the following from the decompiled Java code of the app:
 - Log messages
 - Any indication of possible user credentials
 - Java comments
-- All strings in the code
+- Used libs
+- URLs in code
+- Usage of shared preferences
+- Usage of external storage
+- Common components such as OkHttp and WebView
 
 Unsurprisingly, its output is usually huge, so it is recommended to redirect the command's output to a file
 
+*short*
+Squeezes only the decompiled code that belongs to the developer. For example, if an app has a package name of com.notEnaf.myapp, then *squeeze short* squeezes only the code in com/notEnaf directory.
 
-    java -jar AndroTickler.jar -pkg <package> -l [-exp]
+*<codeLocation>*
+Squeezes the code only in *codeLocation* directory. Helpful to limit your search or squeeze the source code if available.
+
+
+##Listing Components
+
+    java -jar AndroTickler.jar -pkg <package> -l [-exp] [-v]
 Lists all components of the app 
 
--exp: show only exported components
+*-exp*
+Shows only exported components
+
+*-v*
+Gives more detailed information for each component:
+ - Component type
+ - Whether exported or not
+ - Its intent filters 
+ - The tool checks the corresponding Java class to each component and returns all possible intent extras 
+
 
 
     java -jar AndroTickler.jar -pkg <package> -l [-act | -ser | -rec | -prov ] [-exp] [-v]
@@ -99,47 +124,55 @@ Lists any kind of components
 - -rec: broadcast receivers
 - -prov: Content providers
 - -exp: show only exported components of any of the above type 
-- -v: more detailed information for each component:
- - Component type
- - Whether exported or not
- - Its intent filters 
- - The tool checks the corresponding Java class to each component and returns all possible intent extras 
 
-.
 
-    java -jar AndroTickler.jar -pkg <package> -db [ |e]
+##Database
+
+    java -jar AndroTickler.jar -pkg <package> -db [|e|l|d] [nu]
 	
+By default, all -db commands update the app's data storage directory on the host before running the check.
+
+*no attribute OR e*
 Tests whether the databases of the app are encrypted. It is the default action in case no option is given after -db flag.
 
-By default, all -db commands update the app's data directory on the host before running the check.
-
-
-    java -jar AndroTickler.jar -pkg <package> -db [l]
+*l*
 Lists all databases of the app. Encrypted databases might not be detected.
 
-    java -jar AndroTickler.jar -pkg <package> -db [d]
-	
+*d*
 Takes a sqlite dump of any of the unencrypted databases.
 
-    java -jar AndroTickler.jar -pkg <package> -db [|e|l|d] [nu|noUpdate]
-    
-nu or noUpdate runs any of the above options without updating the app's data directory on the host.
+*nu* 
+noUpdate: runs any of the above options without updating the app's data directory on the host.
 
-    java -jar AndroTickler.jar -pkg <package> -diff
-	
-Copies the data directory of the app (to DataDirOld) then asks the user to do the action he wants and to press Enter when he's done. Then it copies the data directory again (to DataDir) and runs diff between them to show which files got added, deleted or modified. 
+##Data Storage Directory Comparison
 
     java -jar AndroTickler.jar -pkg <package> -diff [d|detailed]
+	
+Copies the data storage directory of the app (to DataDirOld) then asks the user to do the action he wants and to press Enter when he's done. Then it copies the data storage directory again (to DataDir) and runs diff between them to show which files got added, deleted or modified. 
+
+*d|detailed*
 Does the same as the normal -diff command, also shows what exactly changed in text files and unencrypted databases.
 
-    java -jar AndroTickler.jar -pkg <package> -sc <key>
-Searches the decompiled Java code of the app for the given key
+##Search
+
+
+    java -jar AndroTickler.jar -pkg <package> -sc <key> [<customLocation>]
+
+Searches for the *key* in the following locations:
+- The decompiled Java code of the app
+- res/values/strings.xml
+- res/values/arrays.xml
+
+Search is case insensitive.
+
+*<customLocation>*
+Replaces the decompiled Java code location with the custom location.
+
+
 
     java -jar AndroTickler.jar -pkg <package> -sd <key>
-Searches the Data directory of the app for the given key
+Searches the Data storage directory of the app for the given key
 
-    java -jar AndroTickler.jar [-pkg <package>] [-bg|--bgSnapshots]
-Copies the background snapshots taken by the device (works with and without -pkg option)
 
 Tickling
 =========
@@ -148,6 +181,8 @@ Triggers components of the app, by all possible combinations of intents. For exa
 if the -exp option is used, then the components will be triggered without root privileges or any special permissions. If not, then the components will be trigged with root privileges. This helps to test the app in 2 different scenarios: against normal-privileged or high-privileged attackers.
 
 Before triggering components, AndroTickler prints all the commands to be executed. Then for each command, it triggers the component, prints the command then waits for the user. This gives the user enough time to do any extra checks after the command's execution. Before the user moves on to the next command, he's given the option to capture a screenshot of the device for PoC documentation.
+
+
 
     java -jar AndroTickler.jar -pkg <package> -t [-all | -exp] [target] [-log]
 Triggers the targets as explained above.
@@ -172,42 +207,51 @@ if no value, then the target is all of the above
 
 Frida:
 ======
-Frida should be installed on your host machine. Also the location of Frida server on the Android device should be added to *Tickler.conf* file.
+Frida should be installed on your host machine. Also the location of Frida server on the Android device should be added to *Tickler.conf* file in the *Frida_server_path* entry
+
+
 
     java -jar AndroTickler.jar -pkg <package> -frida enum
 Enumerates loaded classes
 
+
+
     java -jar AndroTickler.jar -pkg <package> -frida vals <ClassName> <MethodName> <NumberOfArgs> [-reuse]
 Displays arguments and return value of this method (only primitive datatypes and String)
 
+*reuse*
+In case of vals and set options, Frida creates/updates a Frida script of that functionality. You can modify the created script as you want, then if you want to run it through AndroTickler, then use *-reuse* option so that it doesn't get overridden.
+
+
     java -jar AndroTickler.jar -pkg <package> -frida set <ClassName> <MethodName> <NumberOfArgs> <NumberOfArgToModify> <newValue>[-reuse]
-Sets the argument number <NumberOfArgToModify> to <newValue> (only primitive datatypes and String)
-If <NumberOfArgToModify> > <NumberOfArgs>: sets the return value 
+Sets the argument number *NumberOfArgToModify* to *newValue* (only primitive datatypes and String)
+If *NumberOfArgToModify* > *NumberOfArgs*: sets the return value 
 
 
-    java -jar AndroTickler.jar -pkg <package> -frida script <scriptPath> <arguments>
-
-Run custom frida JS script 
 
     java -jar AndroTickler.jar -pkg <package> -frida script <scriptPath>
-Runs a frida JS script located at <scriptPath> on your host
+Runs a frida JS script located at *scriptPath* on your host
 
  
-In case of vals and set options, Frida creates/updates a Frida script of that functionality. You can modify the created script as you want, then if you want to run it through AndroTickler, then use *-reuse* option so that it doesn't get overridden.
 
 Other Features
 ================= 
 
     java -jar AndroTickler.jar -pkg <package> -dbg
 Creates a debuggable version of the app, which can be installed on the device and debugged using any external tool.
-
 AndroTickler comes with a keystore to sign the debuggable apk, but it requires *jarsigner* tool on the host.
+
+
 
     java -jar AndroTickler.jar -pkg <package> -apk <decompiledDirectory>
 Builds an apk file from a directory, signs it and installs it.
 
-    java -jar AndroTickler.jar -pkg <package> -mitm
-Modifies Network security configuration of the app to circumvent MitM restrictions on Android Nougat (not related to pinning) 
+
+
+    java -jar AndroTickler.jar [-pkg <package>] [-bg|--bgSnapshots]
+Copies the background snapshots taken by the device (works with and without -pkg option) to *bgSnapshots* subdirectory.
+
+
 
     java -jar AndroTickler.jar -pkg <package> -cp2host <source_path> [dest]
 Copies files / directories from the android devices. 
@@ -216,14 +260,13 @@ Copies files / directories from the android devices.
 
 If dest option is not given then the directory's name will be the timestamp of the transaction. 
 
+
+
     java -jar AndroTickler.jar [-pkg <package>] -screen
 - Captures the current screenshot of the device and saves them in *images* subdirectory
 - Works with or without the package flag
 
-.
 
-    java -jar AndroTickler.jar [-pkg <package>] [-bg |--bgSnapshots]
-- Copies all background snapshots saved on the device (related to the app or not) to *bgSnapshots* subdirectory.
 
 Note
 ----
