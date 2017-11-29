@@ -307,7 +307,7 @@ public class Tickler {
 	public void squeezeCode(String codeLoc){
 		JavaSqueezer disc = new JavaSqueezer();
 		
-		if (codeLoc.equals("short")){
+		if (codeLoc != null && codeLoc.equals("short")){
 			int index1 = TicklerVars.pkgName.indexOf('.')+1;
 			String subloc= TicklerVars.pkgName.substring(0,TicklerVars.pkgName.indexOf('.', index1));
 			codeLoc = TicklerVars.jClassDir+"/"+subloc.replaceAll("\\.", "/");
