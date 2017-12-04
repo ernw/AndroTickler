@@ -37,7 +37,7 @@ public abstract class TicklerVars {
 		setPkgName(pName);
 		appTickDir = ticklerDir+pkgName+"/";
 		tickManifestFile = appTickDir+TicklerConst.MANIFEST_NAME;
-		sdCardPath = TicklerConst.sdCardPathDefault+pkgName +"/";
+		//sdCardPath = TicklerConst.sdCardPathDefault+pkgName +"/";
 		dataDir = appTickDir+TicklerConst.DATA_DIR_NAME;
 		extractedDir = appTickDir+TicklerConst.EXTRACTED_NAME;
 		smaliDir = extractedDir+TicklerConst.SMALI_DIR_NAME;
