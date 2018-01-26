@@ -58,8 +58,8 @@ public class FridaGetArgsAndReturn extends FridaJsAction{
 			methodArguments+=s+", ";
 			consoleLogArgs+="console.log(\"Input: \"+"+s+");\n"; 
 		}
-		
-		methodArguments = methodArguments.substring(0, methodArguments.length()-2);
+		if (!methodArguments.isEmpty())
+			methodArguments = methodArguments.substring(0, methodArguments.length()-2);
 		
 		tempCode = tempCode.replaceAll("\\$args", methodArguments);
 		tempCode = tempCode.replaceAll("\\$console_log_inputs", consoleLogArgs);

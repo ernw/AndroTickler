@@ -68,7 +68,8 @@ public class FridaSetValue {
 			methodArguments+=s+", ";
 		}
 		
-		methodArguments = methodArguments.substring(0, methodArguments.length()-2);
+		if (!methodArguments.isEmpty())
+			methodArguments = methodArguments.substring(0, methodArguments.length()-2);
 		
 		tempCode = tempCode.replaceAll("\\$args", methodArguments);
 		

@@ -71,7 +71,9 @@ public class JavaSqueezer {
 	public void report(){
 		//Components
 		this.libsAndComponents();
-		this.libFiles();
+		this.frameworks();
+		this.soLibFiles();
+		this.dllFiles();
 		//Storage
 		this.storage();
 		this.externalStorageInCode();
@@ -144,16 +146,63 @@ public class JavaSqueezer {
 		
 	}
 	
-	private void libFiles(){
+//	private void libFiles(){
+//		String[] extenstions = {"so"};
+//		List<File> soLibs = this.sU.search4FileInDir(TicklerVars.extractedDir, extenstions);
+//		if (!soLibs.isEmpty()) {
+//			OutBut.printH2("Library files in the app");
+//			for (File f:soLibs ){
+//				OutBut.printNormal(f.getAbsolutePath().replaceAll(TicklerVars.extractedDir, "[Extracted_Apk]"));
+//			}
+//			OutBut.printNormal("\nWhere [Extracted_Apk] is "+TicklerVars.extractedDir);
+//		}
+//	}
+	
+	/**
+	 * Searches for so Libraries in the APK
+	 */
+	private void soLibFiles(){
 		String[] extenstions = {"so"};
-		List<File> soLibs = this.sU.search4FileInDir(TicklerVars.extractedDir, extenstions);
-		if (!soLibs.isEmpty()) {
-			OutBut.printH2("Library files in the app");
-			for (File f:soLibs ){
-				OutBut.printNormal(f.getAbsolutePath().replaceAll(TicklerVars.extractedDir, "[Extracted_Apk]"));
+		OutBut.printH2("Libraries in the APK");
+		this.searchForFilesInAPK(extenstions);
+	}
+	
+	/**
+	 * Searches for DLL files in the APK
+	 */
+	private void dllFiles(){
+		String[] extenstions = {"dll"};
+		OutBut.printH2("DLLs in the APK");
+		this.searchForFilesInAPK(extenstions);
+	}
+	
+	/**
+	 * Checks for certificates in APK, taken from -info flag
+	 */
+	private void certsInAPK() {
+		InfoGathering info = new InfoGathering();
+		info.getCertificatesInApkDirectory();
+	}
+	
+	private void frameworks() {
+		OutBut.printH2("Frameworks");
+		String[] keys = {"Kotlin", "Cordova","PhoneGap", "Xamarin","Corona","Appsee","MQTT"};
+		ArrayList<SimpleEntry> hits = new ArrayList<AbstractMap.SimpleEntry>();
+		ArrayList<String> files = new ArrayList<String>();
+		
+		for (String c:keys){
+			hits=this.sU.searchForKeyInJava(c,this.codeRoot);
+			OutBut.printH3(c);
+			if (!hits.isEmpty()){
+				files=this.returnFileNames(hits);
+			
+				for (String s:files)
+					OutBut.printNormal(s);
+				OutBut.printNormal("\n---------------------------------------------------------------");
 			}
-			OutBut.printNormal("\nWhere [Extracted_Apk] is "+TicklerVars.extractedDir);
 		}
+		
+		
 	}
 	
 	/////////////////////// Crypto ////////////////////////
@@ -380,6 +429,19 @@ public class JavaSqueezer {
 		
 		return eA;
 		
+	}
+	
+	/**
+	 * Searches for a type of files in APK and prints a list of these files
+	 */
+	private void searchForFilesInAPK(String[] extension){
+		List<File> files = this.sU.search4FileInDir(TicklerVars.extractedDir, extension);
+		if (!files.isEmpty()) {
+			for (File f:files ){
+				OutBut.printNormal(f.getAbsolutePath().replaceAll(TicklerVars.extractedDir, "[Extracted_Apk]"));
+			}
+			OutBut.printNormal("\nWhere [Extracted_Apk] is "+TicklerVars.extractedDir);
+		}
 	}
 
 
