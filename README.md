@@ -211,8 +211,9 @@ In case of vals and set options, Frida creates/updates a Frida script of that fu
 
 ## Modify Arguments or Return Value
     java -jar AndroTickler.jar -pkg <package> -frida set <ClassName> <MethodName> <NumberOfArgs> <NumberOfArgToModify> <newValue>[-reuse]
-Sets the argument number *NumberOfArgToModify* to *newValue* (only primitive datatypes and String)
-If *NumberOfArgToModify* > *NumberOfArgs*: sets the return value 
+Sets the argument number *NumberOfArgToModify* to *newValue* (only primitive datatypes and String). *NumberOfArgToModify* starts with 0: First argument --> arg number 0 
+If *NumberOfArgToModify* >= *NumberOfArgs*: sets the return value
+ 
 
 ## Run JS Frida script
     java -jar AndroTickler.jar -pkg <package> -frida script <scriptPath>
@@ -280,7 +281,11 @@ Queries all content providers and saves logcat messages until the tool stops exe
     java -jar AndroTickler.jar -pkg <package> -t <component_name> 
 Triggers the component, type of triggering depends on the type of the component
 
+    java -jar AndroTickler.jar -pkg de.not3naf.myApp -frida set de.not3naf.myApp.myActivity myMethod 2 0 "newValue" 
+Hooks to the method "myMethod" that has 2 arguments and changes value of the first argument (args[0]) to "newValue" 
 
+    java -jar AndroTickler.jar -pkg de.not3naf.myApp -frida set de.not3naf.myApp.myActivity myMethod 2 2 false 
+Hooks to the method "myMethod" that has 2 arguments and changes the return value to boolean false 
 
 
 
