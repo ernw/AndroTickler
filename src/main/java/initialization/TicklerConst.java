@@ -26,7 +26,7 @@ public class TicklerConst {
 	public static String sdCardPathDefault = "/sdcard/Tickler/";
 	public static String MANIFEST_NAME = "AndroidManifest.xml";
 	public static String DATA_DIR_NAME = "DataDir/";
-	public static String EXTRACTED_NAME = "extracted/";
+	public static String EXTRACTED_NAME = "apk/";
 	public static String SMALI_DIR_NAME = "smali/";
 	public static String IMAGES_DIR_NAME= "images/";
 	public static String LOGS_DIR_NAME = "logs/";
@@ -36,7 +36,12 @@ public class TicklerConst {
 	public static String FRIDA_SCRIPTS_DIR_NAME= "fridaScripts/";
 	public static String JAVA_CODE_DIR_NAME = DEX2JAR_OP_DIR_NAME+"Code";
 	public static String newAppTempDir = "newAppTemp/";
-	public static String COPIED_EXTERNAL_STORAGE_NAME="externalStorage/";
+	public static String EXTERNAL_STORAGE_Dir="ExtDataDir/";
+	public static String DIFF_OLD_STORAGE = "Storage_old/";
+	public static String DATA_DIR_OLD=DIFF_OLD_STORAGE+DATA_DIR_NAME;
+	public static String EXT_DIR_OLD=DIFF_OLD_STORAGE+EXTERNAL_STORAGE_Dir;
+	public static String SQUEEZE_FILE_NAME= "squeeze.txt";
+	public static String APKTOOL_FILE_NAME="apktool.jar";
 	
 	//Tools names
 	public static String DEX2JAR_EXEC = "/dex2jar-2.1/d2j-dex2jar.sh";
@@ -48,7 +53,7 @@ public class TicklerConst {
 	public static int SERVICE=2;
 	public static int PROVIDER=3;
 	public static int RECEIVER=4;	
-	public static String version="2";
+	public static String version="2.4";
 	public static final int debuggable=0;
 	public static final int mitm=1;
 	public static String mitmApkName = "mitm.apk";
@@ -70,6 +75,7 @@ public class TicklerConst {
 	 +"        -findPkg <key>			Search for a package name	\n"
 	 +"        -version			Print version	\n"
 	 +"	-pkgs				List all installed packages on the android device	\n"
+	 +" -offline			Offline Mode, no devices needed to be connected\n"
 	 +"	-pkg				Specify package name of the app		\n"
 	 +"		\n"
 	 +"	Options of pkg:	\n"

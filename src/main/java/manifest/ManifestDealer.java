@@ -18,7 +18,9 @@ package manifest;
 import java.io.File;
 import java.util.ArrayList;
 import apk.ApkToolClass;
+import apk.ApkToolDude;
 import apk.Decompiler;
+import base.DOMXMLReader;
 import base.FileUtil;
 import base.XMLReader;
 import cliGui.OutBut;
@@ -38,10 +40,11 @@ import initialization.TicklerVars;
  */
 public class ManifestDealer {
 	private String manifestPath,pkgName,appTickDir;
-	private XMLReader xmlreader;
+//	private XMLReader xmlreader;
+	private DOMXMLReader domXmlreader;
 	public ManifestAnalyzer manAn;
 	private FileUtil fileT;
-	private ApkToolClass apkTool;
+	private ApkToolDude apkTool;
 	private boolean apkExisted = true;
 
 	/////////////////////// Package option /////////////////////////
@@ -49,7 +52,9 @@ public class ManifestDealer {
 		this.pkgName = pkgName;
 		fileT = new FileUtil();
 		this.appTickDir = TicklerVars.appTickDir;
-		this.apkTool = new ApkToolClass();
+		// New ApkClass
+//		this.apkTool = new ApkToolClass();
+		this.apkTool = new ApkToolDude();
 		
 		//1- create apk tickler directory if it does not exist
 		fileT.createDirOnHost(this.appTickDir);
@@ -102,6 +107,11 @@ public class ManifestDealer {
 	}
 	
 	private boolean isApkExist(){
+		if (TicklerVars.isOffline) {
+			String [] apkArray = {"apk"};
+			if (this.fileT.listFilesInDirContain(TicklerVars.appTickDir, apkArray )!= null)
+				return true;
+		}
 		String apkPath = this.getPackageApkPath();
 		String apkName = this.getFileNameFromPath(apkPath);
 		File apk = new File(TicklerVars.appTickDir+apkName);
@@ -123,9 +133,17 @@ public class ManifestDealer {
 	}
 	
 	public String getApkName(){
-		String apkName = (new File(this.getPackageApkPath())).getName();
-		String apkName2 = apkName.substring(0,apkName.indexOf(".apk")+4);
-		String filePath = this.appTickDir+"/"+apkName2+".apk";
+		String apkName2;
+		if (TicklerVars.isOffline) {
+			//Name will always be base.apk
+			apkName2 = "base.apk";
+			
+		}
+		else {
+			String apkName = (new File(this.getPackageApkPath())).getName();
+			 apkName2 = apkName.substring(0,apkName.indexOf(".apk")+4);
+			String filePath = this.appTickDir+"/"+apkName2+".apk";
+		}
 		return apkName2;
 	}
 	
@@ -137,9 +155,13 @@ public class ManifestDealer {
 		this.manAn = new ManifestAnalyzer(theManifest);
 	}
 	
+	// Modified : replacing xmlreader with DOMXmlreader
 	public Manifest generateManifestFromXML(String path){
-		this.xmlreader = new XMLReader(path);
-		return this.xmlreader.getManifest();
+//		this.xmlreader = new XMLReader(path);
+		this.domXmlreader = new DOMXMLReader(path);
+		Manifest theManifest = this.domXmlreader.parselManifest();
+		return theManifest;
+//		return this.xmlreader.getManifest();
 	}
 
 	private String getFileNameFromPath(String path){

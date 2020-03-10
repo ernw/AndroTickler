@@ -15,43 +15,42 @@
  ******************************************************************************/
 package components;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name="manifest")
+
 public class Manifest {
 	
-	private List<Intent> intents;
-	private List<UsesPermission> usesPermissions;
-	private List<Permission> Permissions;
+	private ArrayList<Intent> intents;
+	private ArrayList<UsesPermission> usesPermissions;
+	private ArrayList<Permission> Permissions;
 	private Application application;
 	private String pkgName;
 
-	public List<Intent> getIntents() {
+	public ArrayList<Intent> getIntents() {
 		return intents;
 	}
 
-	@XmlElement(name="intent-filter")
-	public void setIntents(List<Intent> intents) {
+	public void setIntents(ArrayList<Intent> intents) {
 		this.intents = intents;
 	}
 
-	public List<UsesPermission> getUsesPermissions() {
+	public ArrayList<UsesPermission> getUsesPermissions() {
 		return usesPermissions;
 	}
-	@XmlElement(name="uses-permission")
-	public void setUsesPermissions(List<UsesPermission> usesPermissions) {
+	
+	public void setUsesPermissions(ArrayList<UsesPermission> usesPermissions) {
 		this.usesPermissions = usesPermissions;
 	}
 
-	public List<Permission> getPermissions() {
+	public ArrayList<Permission> getPermissions() {
 		return Permissions;
 	}
-	@XmlElement(name="permission")
-	public void setPermissions(List<Permission> permissions) {
+
+	public void setPermissions(ArrayList<Permission> permissions) {
 		Permissions = permissions;
 	}
 
@@ -66,7 +65,7 @@ public class Manifest {
 	public String getPkgName() {
 		return pkgName;
 	}
-	@XmlAttribute(name="package")
+
 	public void setPkgName(String pkgName) {
 		this.pkgName = pkgName;
 	}

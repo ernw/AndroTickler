@@ -34,7 +34,8 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.UnrecognizedOptionException;
 
 import code.JavaSqueezer;
-
+import exceptions.TNotFoundEx;
+import base.FileUtil;
 import base.OtherUtil;
 import base.SearchUtil;
 import base.Tickler;
@@ -51,15 +52,16 @@ public class TicklerCLI {
 
 	public static void main(String[] args) {
 		
+		
 		TicklerCLI cli = new TicklerCLI();
-//		cli.test();
+
 		cli.parser = new BasicParser();
 		cli.options = new Options();
 		
 		Option findPkg = new Option("findPkg",null, true, "Search for a package name");
 		Option listPack = new Option("pkgs",null, false,"List all installed packages on this device");
 	
-		Option pack = new Option("pkg",null, true, "Name of an installed package");
+		Option pkg = new Option("pkg",null, true, "Name of an installed package");
 		Option trigger = new Option("t","trigger",false,"Start components");
 		Option all = new Option("all",null,false,"Start all components");
 		Option exp = new Option("exp",null,false,"Apply only to Exported components");
@@ -84,6 +86,7 @@ public class TicklerCLI {
 		Option noCopy = new Option("nu","noUpdate",false, "Doesn't update DataDir before execution (with db and big dataDir)");
 		Option mitm = new Option("mitm",null,false, "Allows user CA in Android 7");
 		Option fridaReuse = new Option("reuse",null,false, "Reuse existing Frida JS");
+		Option offline = new Option("offline",null,false, "Offline Mode, no devices needed to be connected");
 		
 		Option copy2host = OptionBuilder.create("cp2host");
 		copy2host.setOptionalArg(true);
@@ -116,7 +119,7 @@ public class TicklerCLI {
 		frida.setOptionalArg(true);
 		frida.setArgs(6);
 		
-		cli.options.addOption(pack);
+		cli.options.addOption(pkg);
 		cli.options.addOption(trigger);
 		cli.options.addOption(all);
 		cli.options.addOption(exp);
@@ -150,8 +153,10 @@ public class TicklerCLI {
 		cli.options.addOption(apk);
 		cli.options.addOption(frida);
 		cli.options.addOption(fridaReuse);
+		cli.options.addOption(offline);
 		
 		try {
+			
 			CommandLine cl = cli.parser.parse(cli.options, args,false);
 			
 			cli.startTickler(cl);
@@ -165,6 +170,10 @@ public class TicklerCLI {
 			OutBut.printError("Missing parameter of option "+e.getOption().getOpt());
 			System.out.println(TicklerConst.helpMessage);
 		}
+		
+		catch(TNotFoundEx te) {
+			OutBut.printError(te.getMessage());
+		}
 
 		catch(Exception e){
 			e.printStackTrace();
@@ -173,16 +182,19 @@ public class TicklerCLI {
 		
 	}
 	
-	public void test(){
-		JavaSqueezer sq = new JavaSqueezer();
-		sq.commentsInCode();
-		
-	}
 	
-	public void startTickler(CommandLine cl){
+	public void startTickler(CommandLine cl) throws TNotFoundEx{
 		boolean exported = false;
 		boolean details = false;		
 		int target = TicklerConst.ALLCOMPS;
+		String mode = "pkg";
+		
+		
+		if (cl.hasOption("offline")) {
+			this.checkOfflineFeasibility(cl);
+			mode = "offline";
+			TicklerVars.isOffline = true;
+		}
 		
 		if (cl.hasOption("h") || cl.hasOption("help"))
 		{
@@ -191,11 +203,11 @@ public class TicklerCLI {
 		}
 		
 		if (cl.hasOption("findPkg")){
-			Tickler t = new Tickler("search", "search");
+			Tickler t = new Tickler("noPkg", "findPkg");
 			t.searchPackage(cl.getOptionValue("findPkg"));
 		}
 		if (cl.hasOption("pkgs")){
-			Tickler t = new Tickler("search", "search");
+			Tickler t = new Tickler("noPkg", "pkgs");
 			t.printPackages();
 		}
 		
@@ -204,7 +216,7 @@ public class TicklerCLI {
 		////////////////////////////////// Pkg /////////////////////////////
 		if (cl.hasOption("pkg")) {
 			
-			Tickler t = new Tickler("pkg", cl.getOptionValue("pkg"));
+			Tickler t = new Tickler(mode, cl.getOptionValue("pkg"));
 			
 			if (cl.hasOption("exp"))
 				exported = true;
@@ -214,7 +226,7 @@ public class TicklerCLI {
 				t.setLog(true);
 			}
 			else if (cl.hasOption("mitm")){
-				t.createMitM();
+				t.createNougatMitM();
 			}
 			else if (cl.hasOption("debuggable")){
 				t.createDebuggable();
@@ -292,9 +304,15 @@ public class TicklerCLI {
 			else if (cl.hasOption("sc_all") )
 				t.searchInCodeAll(cl.getOptionValue("sc_all"));
 			
+			// Update Data directory?
+			boolean isCopy=true;
+			if (cl.hasOption("noUpdate") || cl.hasOption("nu"))
+				isCopy = false;
+			
 			// Search for a key in DataDir files and Unencrypted Databases 
-			else if (cl.hasOption("sd"))
-				t.searchInDataDir(cl.getOptionValue("sd"));
+			else if (cl.hasOption("sd")) {
+				t.searchInDataDir(cl.getOptionValue("sd"), isCopy);
+			}
 			
 			
 			//Diff data directory before and after an operation
@@ -303,9 +321,6 @@ public class TicklerCLI {
 			
 			//Check encryption of Databases
 			else if (cl.hasOption("db")){
-				boolean isCopy=true;
-				if (cl.hasOption("noUpdate") || cl.hasOption("nu"))
-					isCopy = false;
 				
 				t.databases(cl.getOptionValue("db"),isCopy);
 //			
@@ -338,38 +353,73 @@ public class TicklerCLI {
 				t.frida(fridaArgs,reuse);
 			}
 			
-		}
-		// Snapshot, with or without package name
-		if(cl.hasOption("screen")){		
-			Tickler t = new Tickler("snapshot", "snapshot");
-			t.snapshot();
-		}
-		
-		// Background screenshots
-		if (cl.hasOption("bg")){
-			Tickler t = new Tickler("snapshot", "snapshot");
-			t.backgroundSnapshots();
-		}
-		
-		if (cl.hasOption("cp2host")){
-			Tickler t = new Tickler("snapshot","shanpshot");
-			String[] args = cl.getOptionValues("cp2host");
-			String src = args[0];
-			String dest;
-			if (args.length >1){
-				dest = args[1];
-			}
-			else {
-				dest = null;
+			if(cl.hasOption("screen")){		
+
+				t.snapshot();
 			}
 			
-			t.copyToHost(src, dest);
+			// Background screenshots
+			if (cl.hasOption("bg")){
+				//t = new Tickler("snapshot", "snapshot");
+				t.backgroundSnapshots();
+			}
+			
+			if (cl.hasOption("cp2host")){
+//				Tickler t = new Tickler("snapshot","shanpshot");
+				String[] args2 = cl.getOptionValues("cp2host");
+				String src = args2[0];
+				String dest;
+				if (args2.length >1){
+					dest = args2[1];
+				}
+				else {
+					dest = null;
+				}
+				
+				t.copyToHost(src, dest);
+			}
+			
+		}
+		//////////////////////////// With or without PKG /////////////////////////
+		
+		Tickler t;
+		//package
+		if (! cl.hasOption("pkg")) {
+
+			t = new Tickler("noPkg", "snapshot");
+		
+		// Snapshot, with or without package name
+			if(cl.hasOption("screen")){		
+	
+				t.snapshot();
+			}
+			
+			// Background screenshots
+			if (cl.hasOption("bg")){
+				//t = new Tickler("snapshot", "snapshot");
+				t.backgroundSnapshots();
+			}
+			
+			if (cl.hasOption("cp2host")){
+	//			Tickler t = new Tickler("snapshot","shanpshot");
+				String[] args = cl.getOptionValues("cp2host");
+				String src = args[0];
+				String dest;
+				if (args.length >1){
+					dest = args[1];
+				}
+				else {
+					dest = null;
+				}
+				
+				t.copyToHost(src, dest);
+			}
 		}
 		
 		//Version
 		if (cl.hasOption("version")){
-			Tickler t = new Tickler("version","version");
-			t.version();
+			Tickler t2 = new Tickler("noPkg","version");
+			t2.version();
 		}
 	}
 	
@@ -390,6 +440,20 @@ public class TicklerCLI {
 			e.printStackTrace();
 		}
 		
+	}
+	
+	/**
+	 * Migrated from TicklerChecks not to fuck with the whole code
+	 * @param command
+	 */
+	public void checkOfflineFeasibility(CommandLine cli) throws TNotFoundEx {
+		String [] offlineCommands = {"findPkg", "pkgs", "log", "diff", "dataDir", "t", "screen", "bg", "cp2host", "frida"};
+		
+		for (String opt:offlineCommands) {
+			if (cli.hasOption(opt)) {
+				throw new TNotFoundEx("Tickler command "+opt+" is not compatible with offline mode");
+			}
+		}
 	}
 	
 	

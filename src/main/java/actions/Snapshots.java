@@ -60,10 +60,16 @@ public class Snapshots {
 	}
 	
 	public void getBackGroundSnapshots(){
-		String path = "/data/system/recent_images";
+		//quick and dirty: try both locations
+//		String path = "/data/system/recent_images";
+		String[] paths = {"/data/system_ce/0/recent_images","/data/system/recent_images", "/data/system_ce/0/snapshots/" };
 		this.fileTrans.createDirOnHost(TicklerVars.bgSnapshotsDir);
+		OutBut.printH1("Collecting stored Background screenshots");
+		OutBut.printH2("Screenshots are stored in only one of the following location. So ignore \"Directory does not exist\" errors if 1 location does not report any error");
+		System.out.println();
 		System.out.println("Copying Background snapshots to host...");
-		this.fileTrans.copyDirToHost(path, TicklerVars.bgSnapshotsDir,false);
+		for (String path : paths)
+			this.fileTrans.copyDirToHost(path, TicklerVars.bgSnapshotsDir,false);
 				
 	}
 	

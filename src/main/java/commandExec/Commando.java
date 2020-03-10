@@ -281,9 +281,15 @@ public class Commando {
 	}
 	
 	public String execRoot(String command) {
-		return this.executeCommand("adb shell su -c "+command);
-//		ArrayList<String> result = this.executeProcessString("adb shell su -c "+command);
-//		return result.get(0);
+//		return this.executeCommand("adb shell su -c "+command);
+		String result = this.executeCommand("adb shell su -c "+command);
+		if (result.contains("invalid uid")) {
+			// DEvice / Emulator does not accept su -c, use su UID command
+			result = this.executeCommand("adb shell su 0 "+command);
+		}
+		
+		return result;
+		
 	}
 	
 	/**
@@ -303,7 +309,20 @@ public class Commando {
 	 */
 	public int execRootPrintOP(String command){
 		String fullCommand = "adb shell su -c "+command;
-		return this.executeProcessListPrintOP(fullCommand,true);
+		int result=99;
+		
+		//Quick and Dirty solution to execute root commands on emulators, fixing invalid uid error
+		String testCommand = this.executeCommand("adb shell su -c ");
+		if (testCommand.contains("invalid uid")) {
+			 result = this.executeProcessListPrintOP("adb shell su 0 "+command,true);
+		}
+		else {
+			 result = this.executeProcessListPrintOP(fullCommand,true);
+		}
+		
+		
+		
+		return result;
 	}
 	
 	

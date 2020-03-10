@@ -15,6 +15,7 @@ dependencies {
     compile files('libs/jars/apktool_2.2.2.jar')
     compile files('libs/jars/commons-codec-1.10.jar')
     compile files('libs/jars/jd-core-java-1.2.jar')
+    compile files('libs/jars/json-simple-1.1.1.jar')
     runtime files('libs/jars/commons-cli-1.3.jar')
     runtime fileTree(dir: 'libs/jars', include: '*.jar')
 }

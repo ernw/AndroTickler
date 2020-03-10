@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2017 Ahmad Abolhadid
+ * Copyright 2019 Ahmad Abolhadid
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  ******************************************************************************/
 package components;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 public class Category {
@@ -24,7 +23,6 @@ public class Category {
 		public String getName() {
 			return name;
 		}
-		@XmlAttribute(name="name",namespace="http://schemas.android.com/apk/res/android")
 		public void setName(String name) {
 			this.name = name;
 		}

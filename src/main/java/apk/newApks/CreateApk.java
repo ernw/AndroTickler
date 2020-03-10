@@ -19,6 +19,7 @@ import java.io.File;
 
 import apk.ApkSigner;
 import apk.ApkToolClass;
+import apk.ApkToolDude;
 import apk.AppBroker;
 import base.FileUtil;
 import cliGui.OutBut;
@@ -33,7 +34,7 @@ import initialization.TicklerConst;
  *
  */
 public class CreateApk {
-	private ApkToolClass apktool;
+	private ApkToolDude apktool;
 	private FileUtil ft;
 	private ApkSigner signer;
 	private String newAppDir,netSecConfFileName,netSecConfFilePath,apk;
@@ -41,7 +42,8 @@ public class CreateApk {
 	private INewApk newApk;
 	
 	public CreateApk(int apkID){
-		this.apktool = new ApkToolClass();
+		// Ahmad: replacing ApkToolClass
+		this.apktool = new ApkToolDude();
 		this.ft = new FileUtil(); 
 		this.signer = new ApkSigner();
 		this.newAppDir = TicklerVars.appTickDir+TicklerConst.newAppTempDir;

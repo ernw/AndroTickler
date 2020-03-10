@@ -15,6 +15,7 @@
  ******************************************************************************/
 package components;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -23,7 +24,7 @@ import javax.xml.bind.annotation.XmlElement;
 public class Service implements IComponent,IActivityService{
 	String name,exp, permission;
 	boolean isExported;
-	List<Intent> intent;
+	ArrayList<Intent> intent;
 	
 	public Service() {
 		this.isExported = false;
@@ -32,7 +33,6 @@ public class Service implements IComponent,IActivityService{
 	public String getName() {
 		return name;
 	}
-	@XmlAttribute(name="name",namespace="http://schemas.android.com/apk/res/android")
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -40,7 +40,6 @@ public class Service implements IComponent,IActivityService{
 	public String getExp() {
 		return exp;
 	}
-	@XmlAttribute(name="exported",namespace="http://schemas.android.com/apk/res/android")
 	public void setExp(String exp) {
 		this.exp = exp;
 	}
@@ -53,18 +52,16 @@ public class Service implements IComponent,IActivityService{
 		this.isExported = isExported;
 	}
 	
-	public List<Intent> getIntent() {
+	public ArrayList<Intent> getIntent() {
 		return intent;
 	}
-	@XmlElement(name="intent-filter")
-	public void setIntent(List<Intent> intent) {
+	public void setIntent(ArrayList<Intent> intent) {
 		this.intent = intent;
 	}
 	
 	public String getPermission() {
 		return permission;
 	}
-	@XmlElement(name="permission")
 	public void setPermission(String permission) {
 		this.permission = permission;
 	}

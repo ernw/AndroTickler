@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2017 Ahmad Abolhadid
+ * Copyright 2019 Ahmad Abolhadid
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ public class Application {
 	List<Service> services;
 	List<Receiver> receivers;
 	List<Provider> providers;
+	String name;
 	
 	public Application() {
 		this.isAllowBackup = false;
@@ -36,10 +37,10 @@ public class Application {
 	public boolean isAllowBackup() {
 		return isAllowBackup;
 	}
-	@XmlAttribute(name="allowBackup",namespace="http://schemas.android.com/apk/res/android")
 	public void setAllowBackup(boolean isAllowBackup) {
 		this.isAllowBackup = isAllowBackup;
 	}
+	
 	public List<Activity> getActivites() {
 		return activites;
 	}
@@ -80,6 +81,14 @@ public class Application {
 	@XmlAttribute(name="debuggable",namespace="http://schemas.android.com/apk/res/android")
 	public void setDebuggable(boolean isDebuggable) {
 		this.isDebuggable = isDebuggable;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	

@@ -16,19 +16,25 @@
 package code;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.util.AbstractMap;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.FileUtils;
+//import org.apache.commons.io.FileUtils;
 
 import actions.Searcher;
 import base.FileUtil;
+import base.JsonParser;
 import base.OtherUtil;
 import base.SearchUtil;
 import cliGui.OutBut;
@@ -44,6 +50,11 @@ import initialization.TicklerVars;
 public class JavaSqueezer {
 	private SearchUtil sU;
 	private String codeRoot;
+	private ArrayList<Map> squeezeList;
+	private String jsonSq="{ \"squeeze\": [{\"Title\":\"World accessible files\",\"Values\":[ \"MODE_WORLD_READABLE\", \"MODE_WORLD_WRITABLE\"]},"
+			+ "{\"Title\":\"WebView\",\"Values\":[ \"addJavascriptInterface\", \"setAllowContentAccess\", \"setAllowFileAccess\", \"setAllowUniversalAccess\" ]}]}";
+	private ArrayList<SimpleEntry> stringArrayList;
+	protected PrintStream origSysOut;
 	
 	public JavaSqueezer(){
 		this.sU = new SearchUtil();
@@ -65,10 +76,17 @@ public class JavaSqueezer {
 			}
 		}
 		else {
+			//Redirect system out to a file
+			
 			this.report();
 		}
 	}
 	public void report(){
+		//Redirect ot Squeeze out file
+		this.writeSqueezeInFile();
+		
+		//Preparation: get Strings
+		this.getStringsInCode();
 		//Components
 		this.libsAndComponents();
 		this.frameworks();
@@ -79,6 +97,7 @@ public class JavaSqueezer {
 		this.externalStorageInCode();
 		//Communication
 		this.httpUrls();
+		this.findSchemes();
 		this.pinning();
 		//Crypto
 		this.weakCyphers();
@@ -89,8 +108,15 @@ public class JavaSqueezer {
 		this.logInCode();
 		this.testDisclosure();
 //		this.getStringsInCode();
+		this.squeezeJSon();
 		
 		OutBut.printStep("Where [Java_Code_Dir] is "+this.codeRoot);
+		
+		//Back to SYS Out
+		this.backToSystemOut();
+		
+		//Print Squeeze file
+		this.printSqueezeFile();
 	}
 	
 	
@@ -161,8 +187,8 @@ public class JavaSqueezer {
 	/**
 	 * Searches for so Libraries in the APK
 	 */
-	private void soLibFiles(){
-		String[] extenstions = {"so"};
+	public void soLibFiles(){
+		String[] extenstions = {".so"};
 		OutBut.printH2("Libraries in the APK");
 		this.searchForFilesInAPK(extenstions);
 	}
@@ -170,8 +196,8 @@ public class JavaSqueezer {
 	/**
 	 * Searches for DLL files in the APK
 	 */
-	private void dllFiles(){
-		String[] extenstions = {"dll"};
+	public void dllFiles(){
+		String[] extenstions = {".dll"};
 		OutBut.printH2("DLLs in the APK");
 		this.searchForFilesInAPK(extenstions);
 	}
@@ -185,8 +211,8 @@ public class JavaSqueezer {
 	}
 	
 	private void frameworks() {
-		OutBut.printH2("Frameworks");
-		String[] keys = {"Kotlin", "Cordova","PhoneGap", "Xamarin","Corona","Appsee","MQTT"};
+		OutBut.printH2("Frameworks and Protocols");
+		String[] keys = {"Cordova","PhoneGap", "Xamarin","Corona","Appsee","MQTT", "websocket"};
 		ArrayList<SimpleEntry> hits = new ArrayList<AbstractMap.SimpleEntry>();
 		ArrayList<String> files = new ArrayList<String>();
 		
@@ -228,7 +254,7 @@ public class JavaSqueezer {
 	 */
 	private void crypto(){
 		OutBut.printH2("Crypto and hashing keywords");
-		String[] keys = {"aes", "crypt", "cipher", "sha1", "sha2"};
+		String[] keys = {"aes", "crypt", "cipher", "sha1", "sha2","key" };
 		ArrayList<SimpleEntry> eA = this.returnFNameLineGroup(keys, false);
 		
 		this.printE(this.removeDuplicatedSimpleEntries(eA));
@@ -236,16 +262,19 @@ public class JavaSqueezer {
 	
 	
 	
-	///////////////////////////// excluded /////////////////////////
 	
+	/**
+	 * Capture all strings in code and save the result to stringArrayList
+	 */
 	private void getStringsInCode(){
 		System.out.println("\n");
-		OutBut.printH2("Strings");
+//		OutBut.printH2("Strings");
 		ArrayList<SimpleEntry> e = this.sU.searchForKeyInJava("\"",this.codeRoot);
 		ArrayList<SimpleEntry> eResult = this.sU.refineSearch(e, "[^:](\".+\")");
 		
 //		ArrayList<SimpleEntry> eResult = this.sU.refineSearch(e, "(\"\\w{32}\"|\"\\w{40}\"|\"\\w{56}\"|\"\\w{64}\")");
-		this.printE(this.removeDuplicatedSimpleEntries(eResult));
+//		this.printE(this.removeDuplicatedSimpleEntries(eResult));
+		this.stringArrayList = eResult;
 	}
 	
 	private void getHashes(){
@@ -264,15 +293,18 @@ public class JavaSqueezer {
 	private void httpUrls(){
 		OutBut.printH2("URLs in code");
 		this.getHttpUris();
+		this.getPathes();
+		OutBut.printH2("IP addresses in code");
+		this.getIPAddresses();
 	}
 	
 	public void getHttpUris(){
 		ArrayList<SimpleEntry> hits = this.sU.searchForKeyInJava("http",this.codeRoot); 
-		ArrayList<SimpleEntry> eResult = this.sU.refineSearch(hits, "http(s?)://(.+?)[\"'\\s]");
+		ArrayList<SimpleEntry> eResult = this.sU.refineSearch(hits, "(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
 
 		this.printE(eResult);
 		
-		OutBut.printH3("HTTP URL summary:");
+/*		OutBut.printH3("HTTP URL summary:");
 		ArrayList<String> uris = new ArrayList<>();
 		for (SimpleEntry e: hits){
 			uris.add(this.correctUrl((String)e.getValue()));
@@ -280,7 +312,37 @@ public class JavaSqueezer {
 		}
 		
 		OtherUtil.printStringArray(OtherUtil.removeDuplicates(uris));
+*/		
+	}
+	
+	/**
+	 * Searches for any possible paths: whether API paths or other
+	 */
+	private void getPathes() {
+//		ArrayList<SimpleEntry> hits = this.sU.searchForKeyInJava("\\(\\\"(.*\\/.*)\\\"\\)",this.codeRoot); 
+		ArrayList<SimpleEntry> hits = this.sU.refineSearch(this.stringArrayList, "@\\w+\\(\\\"(.*\\/.*)+\\\"\\)");
+		if (!hits.isEmpty())
+		{
+			OutBut.printH3("Possible paths:");
+			this.printE(hits);
+		}
+	}
+	
+	private void getIPAddresses() {
+		String regex = "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\"
+				+ ".([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])";
 		
+		ArrayList<SimpleEntry> e = this.sU.searchForKeyInJava(".",this.codeRoot);
+		ArrayList<SimpleEntry> eResult = this.sU.refineSearch(e, regex);
+		
+		this.printE(this.removeDuplicatedSimpleEntries(eResult));
+		
+	}
+	
+	private void findSchemes() {
+		OutBut.printH2("Schemes and other URIs");
+		ArrayList<SimpleEntry> hits = this.sU.searchForKeyInJava("://",this.codeRoot); 
+		this.printE(hits);
 	}
 	
 	private void pinning(){
@@ -457,5 +519,59 @@ public class JavaSqueezer {
 		return false;
 	}
 	
+	public void squeezeJSon() {
+		JsonParser jp = new JsonParser();
+		ArrayList<SimpleEntry> eA;
+		String[] searchKeys;
+		ArrayList<SimpleEntry<String,ArrayList<String>>> arr = jp.parseJsonString(this.jsonSq);
+		
+		for (SimpleEntry<String,ArrayList<String>> e : arr) {
+//			System.out.println(e.getKey());
+//			OtherUtil.printStringArray(e.getValue());
+			
+			OutBut.printH2(e.getKey());
+			Object[] aL = e.getValue().toArray();
+			searchKeys= Arrays.copyOf(aL, aL.length, String[].class);;
+			eA = this.returnFNameLineGroup(searchKeys, false);
+			
+			this.printE(this.removeDuplicatedSimpleEntries(eA));
+		}
+	}
+	
+	/**
+	 * Write squeeze output in a squeeze file
+	 */
+	private void writeSqueezeInFile() {
+		try {
+			this.origSysOut = System.out;
+			FileUtil fU = new FileUtil();
+//			fU.writeFile(TicklerVars.squeezeFile, "Tickler Squeeze");
+			PrintStream fileOut = new PrintStream(TicklerVars.squeezeFile);
+			OutBut.printH1("Code Squeeze");
+			OutBut.printH2("Output is also saved at "+ TicklerVars.squeezeFile);
+			System.setOut(fileOut);
+		}
+		catch(FileNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void printSqueezeFile() {
+		FileUtil fU = new FileUtil();
+		try {
+			String squeezeOutput = fU.readFile(TicklerVars.squeezeFile);
+			OutBut.printNormal(squeezeOutput);
+			}
+		catch (IOException e) {
+			OutBut.printError("Problem reading squeeze output file: "+TicklerVars.squeezeFile);
+		}
+	}
+	
+	/**
+	 * Write output back to system out
+	 */
+	private void backToSystemOut() {
+		System.setOut(this.origSysOut);
+	}
 	
 }

@@ -21,9 +21,9 @@ import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.TrueFileFilter;
-import org.apache.commons.io.filefilter.WildcardFileFilter;
+//import org.apache.commons.io.FileUtils;
+//import org.apache.commons.io.filefilter.TrueFileFilter;
+//import org.apache.commons.io.filefilter.WildcardFileFilter;
 
 import base.FileUtil;
 import base.OtherUtil;
@@ -61,9 +61,11 @@ public class ClassExtras {
 	 * Gets the files whose names contain the class name
 	 */
 	private void getClassFiles(){
-			
-		this.files = FileUtils.listFiles( new File(TicklerVars.jClassDir), new WildcardFileFilter("*" + this.className + "*"), TrueFileFilter.TRUE);
+		FileUtil fU = new FileUtil();
+		String[] classNameArr = {this.className};
 		
+//		this.files = FileUtils.listFiles( new File(TicklerVars.jClassDir), new WildcardFileFilter("*" + this.className + "*"), TrueFileFilter.TRUE);
+		this.files = fU.listFilesInDirContain(TicklerVars.jClassDir, classNameArr);
 	}
 	
 	

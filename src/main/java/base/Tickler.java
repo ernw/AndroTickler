@@ -60,32 +60,66 @@ public class Tickler {
 	private Snapshots snaps; 
 	private Comparer comps;
 	
+	// If offline not compatible --> raise exception when initalizeTicklerNoDevice runs (not to fuck up the whoile code)
+	private boolean isOfflineCompatible = true;
+	private boolean isDev=true;
 
-	public Tickler(String mode, String arg) {
+	/**
+	 * 
+	 * @param mode: Tickler's operation mode
+	 * 		- pkg:	Package mode (app) and device needed
+	 * 		- offline:	Package mode and device is not needed
+	 * 		- noPkg:	App not-related ops, such as generic snapshot
+	 * @param pkgName
+	 */
+	public Tickler(String mode, String pkgName) {
 		this.inits();
 		
-		if(mode.equals("pkg")){
-			this.ticklerPackageInit(arg);
+		
+//		if(mode.equals("pkg")){
+//			this.ticklerPackageInit(pkgName);
+//		}
+//		else if (TicklerVars.pkgName == null){
+//				TicklerChecks tc = new TicklerChecks();
+//				tc.loadConfiguration();
+//				TicklerVars.updateVars("NoPackage");								
+//		}
+		
+		if (mode.equals("noPkg")) {
+			TicklerChecks tc = new TicklerChecks();
+			tc.loadConfiguration();
+			TicklerVars.updateVars("NoPackage");	
+			return;
 		}
-		else if (TicklerVars.pkgName == null){
-				TicklerChecks tc = new TicklerChecks();
-				tc.loadConfiguration();
-				TicklerVars.updateVars("NoPackage");								
+		
+		else if (mode.equals("offline")) {
+			this.isDev= false;
+			
 		}
+		//else
+			this.ticklerPackageInit(pkgName, this.isDev);
+			
 	}
-	
+	/**
+	 * Instantiates necessary classes to start Tickler
+	 */
 	private void inits() {
 		this.copyz = new CopyUtil();
 		this.snaps = new Snapshots();
 		this.comps = new Comparer();
 	}
 	
-		
+	/**
+	 * Initiates Tickler in Package mode, whether online or offline
+	 * @param pkgName
+	 * @param isDev
+	 */
+// For now isDev = true --> work online mode: needs a device alwasys connected
 	
-	private void ticklerPackageInit(String pkgName){
-		TicklerChecks tc = new TicklerChecks();
+	private void ticklerPackageInit(String pkgName,boolean isDev){
+		
 		try{
-			tc.initiaizeTickler(pkgName,true);
+			this.runTicklerChecks(pkgName, isDev);
 			this.dealer = new ManifestDealer();
 			this.dealer.meetThePackage(pkgName);
 			
@@ -99,7 +133,14 @@ public class Tickler {
 		}
 	}
 
-	
+
+	private void runTicklerChecks(String pkgName, boolean isDev) throws TNotFoundEx {
+		TicklerChecks tc = new TicklerChecks();
+		if (isDev)
+			tc.initiaizeTickler(pkgName);
+		else
+			tc.initalizeTicklerNoDevice(pkgName);
+	}
 	
 //////// Start components //////////
 	
@@ -182,10 +223,18 @@ public class Tickler {
 	
 
 ///////////// copy  /////////////////
-	// Copy data directory of the app to the Tickler folder
+	/**
+	 *  Copy local and external data directories of the app to the Tickler folder
+	 * @param name
+	 */
+	
 	public void copyDataDir(String name){
 		
-		copyz.copyDataDirName(name);
+		copyz.copyStorage(name);
+//		copyz.copyDataDirName(name);
+//		copyz.copyDataDir(name+"/DataDir");
+//		copyz.copyExtDir(name+"/ExtDataDir");
+		
 	}
 	
 	//Copy any file / directory from the device to the host
@@ -234,7 +283,7 @@ public class Tickler {
 	/**
 	 * Solves the MitM issue with Android Nougat (netsecConfiguration)
 	 */
-	public void createMitM(){
+	public void createNougatMitM(){
 		this.newApk = new CreateApk(TicklerConst.mitm);
 		this.newApk.createNewApk();
 	}
@@ -334,9 +383,9 @@ public class Tickler {
 		this.searcher.sC(key,true);
 	}
 	
-	public void searchInDataDir(String key){
+	public void searchInDataDir(String key, boolean isCopy){
 		this.searcher = new Searcher();
-		this.searcher.searchForKeyInDataDir(key);
+		this.searcher.searchForKeyInDataDir(key,isCopy);
 	}
 	
 	public void b64Search(String key)

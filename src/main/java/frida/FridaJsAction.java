@@ -17,17 +17,31 @@ package frida;
 
 import java.util.ArrayList;
 
+import commandExec.Commando;
+import initialization.TicklerChecks;
+import initialization.TicklerVars;
+
 public class FridaJsAction {
 	protected FridaJsScript script;
 	protected String code;
 	
-	public void execute(String finalCode){
+	public void execute(String finalCode) {
+		TicklerChecks ticklerChecks = new TicklerChecks();
+		if(ticklerChecks.isEmulator() || this.isAppRunning())
+			this.executeNoSpawn(finalCode);
+		else
+			this.executeSpawn(finalCode);
+		
+	}
+	
+	public void executeSpawn(String finalCode){
 		this.script.writeCodeInScript(finalCode);
 		this.script.prepareCommand();
 		this.script.run();
 	
 		
 	}
+	
 	
 	public void executeNoSpawn(String finalCode){
 		this.script.writeCodeInScript(finalCode);
@@ -37,12 +51,24 @@ public class FridaJsAction {
 		
 	}
 	
+	
 	protected ArrayList<String> getMethodArguments(int num){
 		ArrayList<String> methodArgs = new ArrayList<>();
 		for (int i=0;i<num;i++){
 			methodArgs.add("arg"+i);
 		}
 		return methodArgs;
+	}
+	
+	public boolean isAppRunning() {
+		Commando cmd = new Commando();
+		String command="frida-ps -U";
+		String op = cmd.executeCommand(command);
+		
+		if (op.contains(TicklerVars.pkgName)) {
+			return true;
+		}
+		return false;
 	}
 
 }

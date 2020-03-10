@@ -25,6 +25,7 @@ import base.FileUtil;
 import base.OtherUtil;
 import commandExec.Commando;
 import db.DatabaseTester;
+import initialization.TicklerConst;
 import initialization.TicklerVars;
 
 public class Comparer {
@@ -32,21 +33,24 @@ public class Comparer {
 	private Commando commando;
 	private FileUtil fileTrans;
 	private CopyUtil copyz;
+	private String dataDirOld, extDirOld, storageOld;
 	
 	public Comparer() {
 		
 		this.copyz = new CopyUtil();
 		this.commando = new Commando();
-		this.fileTrans = new FileUtil();
+		this.fileTrans = new FileUtil();		
 	}
-	
-	public void diff(boolean detailed) {
+	/*
+	public void diffOld(boolean detailed) {
 		this.clearDataDirs();
 		
 		this.copyz.copyDataDir(TicklerVars.appTickDir+"DataDirOld/");
 		System.out.println("\n\n>>>>>>>>>>>>>>>> Go crazy then press Enter to compare data directories....\n");
 		OtherUtil.pressAnyKeySilent();
+		//Copy both local and external storage
 		copyz.copyDataDir();
+//		copyz.copyStorage();
 		
 		String command = "diff -rq "+ TicklerVars.appTickDir+"DataDirOld/ "+TicklerVars.appTickDir+"DataDir/";
 		String output = this.commando.executeCommand(command);
@@ -60,11 +64,46 @@ public class Comparer {
 			this.diffDetailed(output);
 		}
 	}	
+	*/
+	public void diff(boolean detailed) {
+		
+		//Init here
+		this.storageOld = TicklerVars.transferDir+TicklerConst.DIFF_OLD_STORAGE;
+		this.dataDirOld = this.storageOld+TicklerConst.DATA_DIR_NAME;
+		this.extDirOld = this.storageOld+TicklerConst.EXTERNAL_STORAGE_Dir;
+		
+		this.clearDataDirs();
+		this.copyz.copyStorage(TicklerConst.DIFF_OLD_STORAGE);
+		
+		System.out.println("\n\n>>>>>>>>>>>>>>>> Go crazy then press Enter to compare data directories....\n");
+		OtherUtil.pressAnyKeySilent();
+		
+		copyz.copyStorage();
+		
+		String command = "diff -rq "+ this.dataDirOld +" "+TicklerVars.dataDir;
+		String output = this.commando.executeCommand(command);
+		System.out.println(output.replace(TicklerVars.appTickDir, "[Tickler_App_Dir]/"));
+		
+		// Quick and Dirty: Repeated for external storage 
+		command = "diff -rq "+ this.extDirOld +" "+TicklerVars.extDataDir;
+		output = this.commando.executeCommand(command);
+		System.out.println(output.replace(TicklerVars.appTickDir, "[Tickler_App_Dir]/"));
+		
+		if (output.isEmpty())
+			System.out.println("No change in the app's Data directory");
+		else
+			System.out.println("\n...Where [Tickler_App_Dir] is "+TicklerVars.appTickDir);
+		
+		if (detailed){
+			this.diffDetailed(output);
+		}
+		
+	}
 	
 	/**
 	 * A detailed output of changed files:
 	 * 1) text files: classic diff output
-	 * 2) DB files: query and show the difference
+	 * 2) DB files: dump and show the difference
 	 * @param output: output of undetailed diff 
 	 */
 	
@@ -143,9 +182,17 @@ public class Comparer {
 		this.fileTrans.deleteFromHost(newDump);
 	}
 	
+	/**
+	 * Clears Datadir, ExtDataDir and their old versions before diff
+	 */
 	private void clearDataDirs(){
-		this.fileTrans.warnOverrideAndDelete(TicklerVars.appTickDir+"DataDirOld/");
-		this.fileTrans.warnOverrideAndDelete(TicklerVars.dataDir);
+//		this.fileTrans.warnOverrideAndDelete(TicklerVars.appTickDir+"DataDirOld/");
+//		this.fileTrans.warnOverrideAndDelete(TicklerVars.dataDir);
+		
+		String[] directories = {TicklerVars.dataDir,TicklerVars.extDataDir,this.dataDirOld,this.extDirOld};
+		for (String dir: directories) {
+			this.fileTrans.warnOverrideAndDelete(dir);
+		}
 		
 	}
 	

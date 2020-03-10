@@ -90,7 +90,7 @@ public class InfoGathering {
 	//////////////////////////// Interesting things in APK ////////////////////////////
 	
 	public void getCertificatesInApkDirectory(){
-		String[] certExtensions = {"cer","crt","der","csr","pfx","p12","pem","p7b", "p7r", "spc"};
+		String[] certExtensions = {".cer",".crt",".der",".csr",".pfx",".p12",".pem",".p7b", ".p7r", ".spc"};
 		List<File> result = this.searcher.search4FileInDir(TicklerVars.extractedDir, certExtensions );
 		boolean found = false;
 		

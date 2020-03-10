@@ -32,6 +32,7 @@ public abstract class FridaVars {
 			"	Java.perform(function () {	\n"	 +
 			"		var className = Java.use(\"$className\");	\n"	 +
 			"	            className.$method_name.implementation = function ($args) {	\n"	 +
+			"					console.log(\"$method_name\"+\" method started\");	\n"	 +
 			"					var returnValue = this.$method_name($args);	\n"	 +
 			"					$console_log_inputs	\n"	 +
 //			"	                	"	 +
@@ -49,6 +50,7 @@ public abstract class FridaVars {
 			"	        Java.perform(function () {	\n	"	 +
 			"	            var className = Java.use(\"$className\");	\n	"	 +
 			"	            className.$methodName.implementation = function ($args) {	\n	"	 +
+			"					console.log(\"$methodName\"+\" method started\");	\n"	 +
 			"			var orig_return = this.$methodName($args);	\n	"	 +
 			"			$output_line	\n	"	 +
 			"			return $returnValue;	\n	"	 +

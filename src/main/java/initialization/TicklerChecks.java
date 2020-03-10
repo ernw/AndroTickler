@@ -48,7 +48,7 @@ public class TicklerChecks {
 	////////////////////////Initiatlization ///////////////////////
 	/**
 	 * Initializazion:
-	 * 1) check devices if isDevice is true
+	 * 1) check devices (offline checks migrated to initializeTicklerNoDevice
 	 * 2)host requirements (tools exist)
 	 * 3) load configurations from conf file
 	 * 4) Update TicklerVars
@@ -58,12 +58,12 @@ public class TicklerChecks {
 	 * @param isDev
 	 * @throws TNotFoundEx
 	 */
-	public void initiaizeTickler(String pkgName,boolean isDev) throws TNotFoundEx{
+	public void initiaizeTickler(String pkgName) throws TNotFoundEx{
 
 		Packagez pkg = new Packagez();
-		if (isDev){
-			this.checkDevices();
-		}
+//		if (isDev){
+		this.checkDevices();
+//		}
 		
 		this.checkRequirements();
 		
@@ -83,9 +83,16 @@ public class TicklerChecks {
 	
 	
 	public void initalizeTicklerNoDevice(String pkgName) throws TNotFoundEx{
-	this.loadConfiguration();
-	TicklerVars.updateVars(pkgName);
-	this.checkExternalLibDir();
+//		this.checkOfflineFeasibility(pkgName);
+		this.loadConfiguration();
+		TicklerVars.updateVars(pkgName);
+		this.checkExternalLibDir();
+		
+		if (! this.isPkgFoundOffline(pkgName))
+			throw new TNotFoundEx(pkgName+" has not been processed before by Tickler... \n If you're decompiling it offline:then "
+					+ "Create a directory in "+TicklerVars.ticklerDir+" with its package name");
+		this.createEssentialDirs();	
+		this.isDex2Jar();
 }
 
 	/**
@@ -106,6 +113,19 @@ public class TicklerChecks {
 		if (eligDevices == 0)
 			throw new TNotFoundEx("ERROR: No Android devices detected by the host. Execute adb devices -l to check the connected devices");
 			
+	}
+	/**
+	 * Check if the connected device is an emulator (quick and dirty)
+	 */
+	public boolean isEmulator() {
+		String command = "adb devices -l";
+		Commando commando = new Commando();
+		String op = commando.executeCommand(command);
+		
+		if(op.toLowerCase().contains("emulator"))
+			return true;
+		
+		return false;
 	}
 	
 	/**
@@ -222,8 +242,9 @@ public class TicklerChecks {
 		File myJar;
 		try{
 			
-			File myJar1 = new File(System.getProperty("java.class.path"));
-			myJar = myJar1.getAbsoluteFile().getParentFile();
+//			File myJar1 = new File(System.getProperty("java.class.path"));
+			myJar = new File(ClassLoader.getSystemClassLoader().getResource(".").getPath());
+//			myJar = myJar1.getAbsoluteFile().getParentFile();
 		}
 		catch(Exception e){
 			myJar = new File(".");
@@ -305,5 +326,22 @@ public class TicklerChecks {
 
 	}
 	
+	/**
+	 * Checks if the tickler command is possible to be executed without the device
+	 * Migrated to TicklerCli as a quick and dirty solution
+	 * @param command
+	 */
+//	public void checkOfflineFeasibility(String command) {
+//		String [] offlineCommands = {"sc", "sd", "apk", "mitm", ""};
+//	}
+	
+	private boolean isPkgFoundOffline(String pkgName) {
+		FileUtil ft = new FileUtil();
+		String pkgDir = TicklerVars.ticklerDir+pkgName;
+		if (ft.isExist(pkgDir))
+			return true;
+		
+		return false;
+	}
 	
 }

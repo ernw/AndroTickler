@@ -15,16 +15,18 @@
  ******************************************************************************/
 package apk;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
-
-import org.apache.commons.io.FileUtils;
 
 import base.FileUtil;
 import base.SearchUtil;
 import cliGui.OutBut;
 import commandExec.Commando;
 import initialization.TicklerVars;
+
 
 public class Decompiler {
 	private String jarLoc;
@@ -41,7 +43,7 @@ public class Decompiler {
 	private File getApkFromTicklerDir(){
 		File apkFile;
 		SearchUtil searcher = new SearchUtil();
-		String[] keys ={"apk"};  
+		String[] keys ={"base.apk"};  
 		List<File> apkList = searcher.search4FileInDir(TicklerVars.appTickDir, keys);
 		apkFile = apkList.get(0);
 		if (apkFile.getName().equals("debuggable.apk"))
@@ -53,6 +55,7 @@ public class Decompiler {
 	public void decompile(){
 		this.dex2jar();
 		this.jdCore();
+		
 	}
 	
 	public void dex2jar()
@@ -64,7 +67,7 @@ public class Decompiler {
 			Commando command = new Commando();
 			ft.createDirOnHost(TicklerVars.dex2jarDir);
 			this.jarLoc = TicklerVars.dex2jarDir+"app.jar";
-			String cmd = TicklerVars.dex2jarPath + " "+ this.getApkFromTicklerDir() +" -o "+TicklerVars.jClassDir+".zip";
+			String cmd = TicklerVars.dex2jarPath + " "+ this.getApkFromTicklerDir() +" -o "+TicklerVars.jClassDir+".jar";
 			OutBut.printStep("Decompiling the app using Dex2Jar tool......");
 			command.executeProcessString(cmd);
 			
@@ -75,11 +78,18 @@ public class Decompiler {
 	private void jdCore(){
 		try{
 			OutBut.printStep("Obtaining Java code using JDCore tool. This might take some time ......");
-			new jd.core.Decompiler().decompile(TicklerVars.jClassDir+".zip", TicklerVars.jClassDir);
+//			String cmd = "java -jar /home/a7mad/tools/Android/Decompile/JD-core/jd-core-1.1.3.jar "+TicklerVars.jClassDir+".jar "+TicklerVars.jClassDir;
+//			Commando command = new Commando();
+//			command.executeProcessListPrintOP(cmd,true);
+//			
+//			new jd.core.Decompiler().decompile(TicklerVars.jClassDir+".zip", TicklerVars.jClassDir);
+			new jd.core.Decompiler().decompile(TicklerVars.jClassDir+".jar", TicklerVars.jClassDir);
+
 		}
 		catch(Exception e){
-//			e.printStackTrace();
+			//e.printStackTrace();
 		}
+		
 	}
 	
 	/**

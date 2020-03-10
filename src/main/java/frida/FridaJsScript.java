@@ -21,6 +21,7 @@ import java.util.ArrayList;
 
 import base.FileUtil;
 import commandExec.Commando;
+import initialization.TicklerChecks;
 import initialization.TicklerVars;
 
 /**
@@ -49,13 +50,25 @@ public class FridaJsScript {
 		
 	}
 	
+	/**
+	 * If Emulator --> Don't spawn !!
+	 */
 	public void prepareCommand(){
+		TicklerChecks ticklerChecks = new TicklerChecks();
+		if(ticklerChecks.isEmulator() || this.isAppRunning())
+			this.prepareCommandNoSpawning();
+		else
+			this.prepareCommandSpawn();
+		
+	}
+	
+	public void prepareCommandSpawn(){
 		this.command = "frida -U -f "+TicklerVars.pkgName+" -l "+this.scriptPath+" --no-pause" ;
 		
 	}
 	
 	public void prepareCommandNoSpawning(){
-		this.command = "frida -U "+TicklerVars.pkgName+" -l "+this.scriptPath+" --no-pause" ;
+		this.command = "frida -U "+TicklerVars.pkgName+" -l "+this.scriptPath ;
 	}
 
 
@@ -83,5 +96,16 @@ public class FridaJsScript {
 			methodArgs.add("arg"+i);
 		}
 		return methodArgs;
+	}
+	
+	public boolean isAppRunning() {
+		Commando cmd = new Commando();
+		String command="frida-ps -U";
+		String op = cmd.executeCommand(command);
+		
+		if (op.contains(TicklerVars.pkgName)) {
+			return true;
+		}
+		return false;
 	}
 }

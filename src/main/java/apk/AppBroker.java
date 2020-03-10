@@ -17,6 +17,9 @@ package apk;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -85,6 +88,7 @@ public class AppBroker {
 		
 		File destLoc;
 		File appDir = new File(TicklerVars.appTickDir);
+
 		if (appDir.exists())
 		{	
 			if (bkpLoc == null){
@@ -96,9 +100,10 @@ public class AppBroker {
 			
 			try{
 				
-				FileUtils.moveDirectory(appDir, destLoc);
+//				FileUtils.moveDirectory(appDir, destLoc);
+				Files.move(appDir.toPath(), destLoc.toPath(), StandardCopyOption.REPLACE_EXISTING);
 				
-				FileUtils.moveDirectoryToDirectory(destLoc, appDir, true);
+//				FileUtils.moveDirectoryToDirectory(destLoc, appDir, true);
 				
 			}
 			catch(IOException e){

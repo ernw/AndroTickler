@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2017 Ahmad Abolhadid
+ * Copyright 2019 Ahmad Abolhadid
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +15,18 @@
  ******************************************************************************/
 package components;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public interface IComponent {
 
 	public boolean isExported();
 	public void setExported(boolean isExported);
-	public List<Intent> getIntent();
+	public ArrayList<Intent> getIntent();
 	public String getName();
-	public String getExp();
 	public String getPermission();
+	
+	public void setName(String name);
+	public void setPermission(String permission);
+	public void setIntent(ArrayList<Intent> intentFilters);
 
 }

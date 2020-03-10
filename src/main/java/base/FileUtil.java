@@ -21,8 +21,17 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+
 import org.apache.commons.io.FileUtils;
 import cliGui.OutBut;
 import commandExec.Commando;
@@ -62,12 +71,17 @@ public class FileUtil {
 	 * @param dir
 	 */
 	public void escapeSpaceInDir(File dir){
-		for (File f : dir.listFiles())
-		{
-			if (f.isDirectory())
-				this.escapeSpaceInDir(f);
-
-			this.replaceSpace(f);
+		try {
+			for (File f : dir.listFiles())
+			{
+				if (f.isDirectory())
+					this.escapeSpaceInDir(f);
+	
+				this.replaceSpace(f);
+			}
+		}
+		catch (java.lang.NullPointerException nullEx) {
+			OutBut.printNormal(".... Directory is empty");
 		}
 
 	}
@@ -154,6 +168,55 @@ public class FileUtil {
 			theName=theName+"/";
 		
 		return theName;
+		
+	}
+	
+	/**
+	 * Get files in Folder
+	 * Replacing FileUtils.listFiles problem
+	 * @param src
+	 * @param dest
+	 */
+	public ArrayList<File> listFilesInDir(String dirLoc){
+
+		ArrayList<File> fileList = new ArrayList<File>();	
+		try {
+		 Path source = Paths.get(dirLoc);
+	     Files.walk(source).filter(Files::isRegularFile).forEach(p -> fileList.add(this.pathToFile(p)));
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return fileList;
+	}
+	
+	private File pathToFile(Path p) {
+		File f=p.toFile();
+		if (f.exists()) {
+			return f;
+		}
+		return null;
+	}
+	
+	/**
+	 * Search for files with specific extensions or contain a specific string.
+	 * Solving FileUtils issues
+	 * @param dirLoc
+	 * @param exts
+	 * @return
+	 */
+	public ArrayList<File> listFilesInDirContain(String dirLoc,String[] exts) {
+		ArrayList<File> filez = this.listFilesInDir(dirLoc);
+		ArrayList<File> returnFilez = new ArrayList<File>();
+		
+		for(File f : filez) {
+			for(String ext:exts)
+				if (f.getName().contains(ext)) {
+					returnFilez.add(f);
+				}
+		}
+		return returnFilez;
 		
 	}
 	

@@ -79,6 +79,11 @@ public class StartAttack extends Starter {
 			}
 
 			
+			// Quick and dirty: don't start the app before bcast receiver and content provider attacks
+			
+			if (command.contains("content") || command.contains("am broadcast")){
+				
+			}
 			if (!exported)
 				this.commando.execRootPrintOP(command);
 			else
@@ -90,6 +95,7 @@ public class StartAttack extends Starter {
 				this.snaps.takeSnapshot();
 			}
 			
+			 
 			this.commando.execADB(this.broker.forceStopApp());
 			
 		}

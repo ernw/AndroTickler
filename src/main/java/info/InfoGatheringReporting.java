@@ -16,6 +16,7 @@
 package info;
 
 import java.io.File;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 
@@ -23,6 +24,7 @@ import attacks.StartAttack;
 import base.OtherUtil;
 import base.SearchUtil;
 import cliGui.OutBut;
+import code.JavaSqueezer;
 import device.Packagez;
 import initialization.TicklerVars;
 import manifest.ManifestDealer;
@@ -100,12 +102,20 @@ public class InfoGatheringReporting {
 		OutBut.printH2("Uses Permissions");
 		this.printArrayList(this.dealer.manAn.getUsesPermissions());
 		
+		OutBut.printH2("Components' Permissions");
+		ArrayList<SimpleEntry> per =this.dealer.manAn.getComponentPermissions();
+		for (SimpleEntry e:per) { 
+//			OutBut.printNormal("Component: "+e.getKey()+"\t\trequests Permission: "+e.getValue());
+			OutBut.printNormal("Permission: "+e.getValue()+"\n\tis requested by Component: "+e.getKey());
+		}
+		
 		OutBut.printH2("Content URIs in Code");
 		this.printArrayList(this.fetchContentUris());
 		
 		this.printSchemes();
 		
 		this.getMetaData();
+		this.findLibs();
 
 	}
 	
@@ -152,6 +162,15 @@ public class InfoGatheringReporting {
 	}
 
 	////////////////////////////////////////
+	
+	private void findLibs() {
+		JavaSqueezer squeeze = new JavaSqueezer();
+		
+		squeeze.soLibFiles();
+		
+		squeeze.dllFiles();
+		
+	}
 	
 	
 	private void printArrayList(ArrayList<String> list){

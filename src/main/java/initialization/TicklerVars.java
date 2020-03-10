@@ -19,16 +19,16 @@ public abstract class TicklerVars {
 
 	public static String ticklerDir;
 	public static String pkgName;
-	public static boolean isLib;
+	public static boolean isLib,isOffline;
 	public static String jarPath, configPath;
 	public static String appTickDir,sdCardPath, tickManifestFile,extractedDir,dataDir
-	,smaliDir, imageDir, logDir, bgSnapshotsDir,transferDir, libDir, libJarDir, libNotJarLib, dex2jarPath, 
-	dex2jarDir,jClassDir,keyStore,newApkTempDir,mitmXmlName, fridaServerLoc, fridaScriptsDir;
-	public static String version="2";
+	,smaliDir, imageDir, logDir, bgSnapshotsDir,transferDir, libDir, libJarDir, libNotJarLib, dex2jarPath, apktoolPath,
+	dex2jarDir,jClassDir,keyStore,newApkTempDir,mitmXmlName, fridaServerLoc, fridaScriptsDir,extDataDir, squeezeFile;
+	public static String version="2.2";
 		
 	public static void setPkgName(String pName){
 		if (TicklerVars.pkgName!=null && !TicklerVars.pkgName.equals(pName)){
-			System.out.println("WARNING: Changing package name from "+TicklerVars.pkgName+" to "+pName);		
+//			System.out.println("WARNING: Changing package name from "+TicklerVars.pkgName+" to "+pName);		
 		}
 		TicklerVars.pkgName = pName;
 	}
@@ -37,7 +37,7 @@ public abstract class TicklerVars {
 		setPkgName(pName);
 		appTickDir = ticklerDir+pkgName+"/";
 		tickManifestFile = appTickDir+TicklerConst.MANIFEST_NAME;
-		//sdCardPath = TicklerConst.sdCardPathDefault+pkgName +"/";
+		sdCardPath = TicklerConst.sdCardPathDefault+pkgName +"/";
 		dataDir = appTickDir+TicklerConst.DATA_DIR_NAME;
 		extractedDir = appTickDir+TicklerConst.EXTRACTED_NAME;
 		smaliDir = extractedDir+TicklerConst.SMALI_DIR_NAME;
@@ -45,6 +45,7 @@ public abstract class TicklerVars {
 		logDir = appTickDir+TicklerConst.LOGS_DIR_NAME;
 		bgSnapshotsDir = appTickDir+TicklerConst.BG_DIR_NAME;
 		transferDir = appTickDir+TicklerConst.TRANSFER_DIR_NAME;
+		extDataDir = appTickDir+TicklerConst.EXTERNAL_STORAGE_Dir; 
 		
 		libDir=jarPath+TicklerConst.generalLibName;
 		libJarDir=libDir+TicklerConst.jarsLibName;
@@ -54,12 +55,16 @@ public abstract class TicklerVars {
 		
 		dex2jarPath = libNotJarLib+TicklerConst.DEX2JAR_EXEC;
 		dex2jarDir = appTickDir+TicklerConst.DEX2JAR_OP_DIR_NAME;
+		apktoolPath = libJarDir+TicklerConst.APKTOOL_FILE_NAME;
+		
 		// Output of Java classes
 		jClassDir = appTickDir+TicklerConst.JAVA_CODE_DIR_NAME;
 		keyStore = libNotJarLib+TicklerConst.KEY_STORE_DIR_NAME;
 		newApkTempDir = appTickDir+TicklerConst.newAppTempDir;
 		
 		fridaScriptsDir = appTickDir+TicklerConst.FRIDA_SCRIPTS_DIR_NAME;
+		squeezeFile = appTickDir+TicklerConst.SQUEEZE_FILE_NAME;
+		
 	}
 	
 	public static void setTicklerDir(String dir){

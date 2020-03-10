@@ -29,8 +29,12 @@ Other tools are required for some features, but AndroTickler can still run witho
 How to use it
 =============
 1) Build tool from code
+
+	gradle build
+
 2) Move AndroTickler.jar is to the same directory as Tickler_lib directory and Tickler.conf file (automatically created in build/libs)
-3) Connect your Android device with the application-to-test installed on   
+3) Set dex2jar to executable (libs/notJars//dex2jar-2.1/d2j-dex2jar.sh and libs/notJars//dex2jar-2.1/d2j_invoke.sh)
+4) Connect your Android device with the application-to-test installed on   
 
 
 The current version does the following:

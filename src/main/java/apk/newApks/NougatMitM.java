@@ -43,10 +43,12 @@ public class NougatMitM implements INewApk{
 		try{
 			String manString = this.fU.readFile(newAppDir+"AndroidManifest.xml");
 			
-			if (!manString.toLowerCase().contains("android:networkSecurityConfig"))
+			if (!manString.contains("android:networkSecurityConfig"))
 				manString = manString.replaceAll("<application ", "<application android:networkSecurityConfig=\"@xml/"+TicklerConst.mitmXmlName+"\" ");
 			else{
-				throw new TNotFoundEx("Manifest file already has a networkSecurityConfig entry, please check the configuration manually");
+				//throw new TNotFoundEx("Manifest file already has a networkSecurityConfig entry, please check the configuration manually");
+				//Just replace the original network security config with our file
+				manString = manString.replaceAll(".*android:networkSecurityConfig=\"@xml/(.*)\".* ", TicklerConst.mitmXmlName);
 			}
 			
 			this.fU.writeFile(newAppDir+"AndroidManifest.xml", manString);

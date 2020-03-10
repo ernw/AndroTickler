@@ -280,34 +280,43 @@ public class DataUriHandler {
 	 */
 	public String getStartCommand(DataUri d) {
 		String cmd="";
-		if (d.getScheme()!=null)
-			cmd = " -d "+d.getScheme();
+		if (d.getScheme()!=null && ! d.getScheme().isEmpty()) {
+			cmd = " -d \""+d.getScheme()+"://";
 		
-		if (d.getHost()!=null){
-			String newVal=this.replaceAstrexInPathValues(d.getHost());
-			cmd = cmd+"://"+newVal;
+		// If a scheme is not specified for the intent filter, all the other URI attributes are ignored.
+		// https://developer.android.com/guide/topics/manifest/data-element
+			if (d.getHost()!=null && !d.getHost().isEmpty()){
+				String newVal=this.replaceAstrexInPathValues(d.getHost());
+				cmd = cmd+newVal;
+				}
+			else {
+				cmd=cmd+"TiCkLeR";
 			}
-		
-		if (d.getPort()!=null && !d.getPort().equals("*"))
-			cmd = cmd+ ":"+d.getPort();
-		
-		if (d.getPath()!=null){
-			String newVal = this.replaceAstrexInPathValues(d.getPath());
-			cmd = cmd+newVal;
+			
+			if (d.getPort()!=null && !d.getPort().equals("*") && !d.getPort().isEmpty())
+				cmd = cmd+ ":"+d.getPort();
+			
+			if (d.getPath()!=null){
+				String newVal = this.replaceAstrexInPathValues(d.getPath());
+				cmd = cmd+newVal;
+			}
+			
+			if (d.getPathPattern()!=null){
+				String newVal = this.replaceAstrexInPathValues(d.getPathPattern());
+				cmd = cmd + newVal;
+			}
+			
+			if (d.getPathPrefix()!=null && !d.getPathPrefix().equals("*"))
+				cmd = cmd+ d.getPathPrefix();
 		}
+		if (!cmd.isEmpty())
+			cmd = cmd+"\"";
 		
-		if (d.getPathPattern()!=null){
-			String newVal = this.replaceAstrexInPathValues(d.getPathPattern());
-			cmd = cmd + newVal;
-		}
-		
-		if (d.getPathPrefix()!=null && !d.getPathPrefix().equals("*"))
-			cmd = cmd+ d.getPathPrefix();
-		
-		if (d.getMimeType()!=null)
-			cmd = cmd+" -t " +d.getMimeType();
+			if (d.getMimeType()!=null && ! d.getMimeType().isEmpty())
+				cmd = cmd+" -t " +d.getMimeType();
 		
 		return cmd;
+		
 	}
 	
 	/**

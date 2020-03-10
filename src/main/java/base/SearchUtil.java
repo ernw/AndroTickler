@@ -24,7 +24,7 @@ import java.util.AbstractMap.SimpleEntry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.FileUtils;
+//import org.apache.commons.io.FileUtils;
 
 import cliGui.OutBut;
 import commandExec.Commando;
@@ -146,14 +146,17 @@ public class SearchUtil {
 	* @return
 	*/
 	public List<File> search4FileInDir(String path, String[] extensions){
-		File dir = new File(path);
+		FileUtil fU = new FileUtil();
+//		File dir = new File(path);
 		List<File> files;
 		if (extensions != null){
-			files = (List<File>)FileUtils.listFiles(dir, extensions, true);
+//			files = (List<File>)FileUtils.listFiles(dir, extensions, true);
+			files = fU.listFilesInDirContain(path, extensions);
 			
 		}
 		else {
-			files = (List<File>)FileUtils.listFiles(dir, null, true);
+//			files = (List<File>)FileUtils.listFiles(dir, null, true);
+			files = fU.listFilesInDir(path);
 		}
 		return files;
 		

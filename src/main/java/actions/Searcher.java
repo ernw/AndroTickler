@@ -34,10 +34,14 @@ public class Searcher {
 	
 	private SearchUtil searchUtil;
 	private String codeLoc;
+	private CopyUtil copyUtil;
+	private FileUtil fileUtil;
 	
 	public Searcher() {
 		this.searchUtil = new SearchUtil();
 		this.codeLoc = TicklerVars.jClassDir;
+		this.copyUtil = new CopyUtil();
+		this.fileUtil = new FileUtil();
 	}
 
 	
@@ -46,18 +50,22 @@ public class Searcher {
 	 * @param key
 	 */
 	public void sC(String key,boolean all){
-		File stringsXml = new File(TicklerVars.extractedDir+"res/values/strings.xml");
-		File arraysXml = new File(TicklerVars.extractedDir+"res/values/arrays.xml");
+		
 		ArrayList<SimpleEntry> hits = this.searchInCodeWithOption(key, all);
 		OtherUtil.printSimpleEntryArray(hits, this.codeLoc, "[Java_Code_Dir]");
 		
-		ArrayList<String> hits2 = this.sCInFile(stringsXml, "strings.xml", key);
-		hits2.addAll(this.sCInFile(arraysXml, "arrays.xml", key));
+		//Search in Manifest
+		ArrayList<SimpleEntry> result = new ArrayList<>();
 		
+		result = this.searchUtil.search4KeyInDirFName(TicklerVars.tickManifestFile, key);
+		if (!result.isEmpty()) {
+			OutBut.printH2("Search results in Manifest File");
+			OtherUtil.printSimpleEntryArray(result, TicklerVars.tickManifestFile, "[res]");
+		}
 		
-		if (!hits.isEmpty())
-			for (String s: hits2)
-				OutBut.printNormal(" "+s+"\n");
+		// Search for a key in res directory and print the results
+		this.searchInRes(key);
+		
 		
 	}
 		
@@ -68,6 +76,41 @@ public class Searcher {
 				result = this.searchUtil.findInFile(file, key);
 			}
 			return result;
+		}
+		
+		/**
+		 * Search for a key in the res directory and print the results
+		 * @param key
+		 * @return
+		 */
+		private void searchInRes(String key){
+			ArrayList<SimpleEntry> result = new ArrayList<>();
+			String resDir= TicklerVars.extractedDir+"res/";
+			
+			result = this.searchUtil.search4KeyInDirFName(resDir, key);
+			if (!result.isEmpty()) {
+				OutBut.printH2("Search results in res directory");
+				OtherUtil.printSimpleEntryArray(result, resDir, "[res]");
+			}
+			
+		}
+		
+		/**
+		 * Search fo rkey in strings and arrays.xml but I don't all it as it is replaced by searchinRes()
+		 * @param key
+		 */
+		private void searchInStringsArrays(String key) {
+			File stringsXml = new File(TicklerVars.extractedDir+"res/values/strings.xml");
+			File arraysXml = new File(TicklerVars.extractedDir+"res/values/arrays.xml");
+			
+			ArrayList<String> hits2 = this.sCInFile(stringsXml, "strings.xml", key);
+			hits2.addAll(this.sCInFile(arraysXml, "arrays.xml", key));
+			
+			
+			if (!hits2.isEmpty())
+				for (String s: hits2)
+					OutBut.printNormal(" "+s+"\n");
+			
 		}
 	
 	/**
@@ -123,12 +166,16 @@ public class Searcher {
 	 * Also check in External Dir if exists
 	 * @param key
 	 */
-	public void searchForKeyInDataDir(String key){
+	public void searchForKeyInDataDir(String key, boolean isCopy){
 		
-		OutBut.printStep("Updating Data Directory");
-		CopyUtil copyz = new CopyUtil();
-		copyz.copyDataDir();
-		
+		if (isCopy){
+			OutBut.printStep("Updating Data Directory");
+			CopyUtil copyz = new CopyUtil();
+			copyz.copyDataDir();
+		}
+		else {
+			OutBut.printWarning("Data storage directory is not updated");
+		}
 		//Search in files
 		OutBut.printH2("Searching Files in Data Directory of the app");
 		ArrayList<SimpleEntry> hits = this.searchUtil.search4KeyInDirFName(TicklerVars.dataDir, key);
@@ -164,6 +211,13 @@ public class Searcher {
 		
 	}
 	
+	/**
+	 * Copy external storage into transfers file
+	 * Then saerch in it
+	 * Copying code moved to CopyUtil and a new method is created only to search there
+	 * @param key
+	 */
+	/*
 	private void searchExternalStorage(String key) {
 		InfoGathering info = new InfoGathering();
 		FileUtil fU = new FileUtil();
@@ -177,6 +231,20 @@ public class Searcher {
 			ArrayList<SimpleEntry> hits = this.searchUtil.search4KeyInDirFName(destExtDir, key);
 			OtherUtil.printSimpleEntryArray(hits, extDir, "[External_Dir]");
 		}
+	}*/
+	
+	/**
+	 * Searching for a key in External Directory
+	 * @param key
+	 */
+	private void searchExternalStorage(String key) {
+		//OutBut.printStep("Updating External Storage Directory\n");
+		if ( fileUtil.isExistOnDevice(TicklerVars.extDataDir)) {
+			copyUtil.copyExtDir(TicklerVars.extDataDir);
+			ArrayList<SimpleEntry> hits = this.searchUtil.search4KeyInDirFName(TicklerVars.extDataDir, key);
+			OtherUtil.printSimpleEntryArray(hits, TicklerVars.extDataDir, "[External_Dir]");
+		}
+		
 	}
 
 }

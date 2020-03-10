@@ -23,11 +23,12 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.UnmarshallerHandler;
 import attacks.ActivityStarter;
 import attacks.Broadcaster;
-import brut.androlib.ApktoolProperties;
+//import brut.androlib.ApktoolProperties;
 import components.Manifest;
 
 /**
  * Marshal and Unmarshal Manifest file
+ * Unused since v2.3
  * @author aabolhadid
  *
  */

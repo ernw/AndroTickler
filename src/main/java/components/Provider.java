@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2017 Ahmad Abolhadid
+ * Copyright 2019 Ahmad Abolhadid
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  ******************************************************************************/
 package components;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import javax.xml.bind.annotation.XmlAttribute;
 
@@ -23,40 +23,39 @@ public class Provider implements IComponent{
 	
 	String name,permission,authorities;
 	boolean isExported;
-	List<Intent> intent;
+	ArrayList<Intent> intent;
 	
 	public String getName() {
 		return name;
 	}
-	@XmlAttribute(name="name",namespace="http://schemas.android.com/apk/res/android")
 	public void setName(String name) {
 		this.name = name;
 	}
+	
 	public String getPermission() {
 		return permission;
 	}
-	@XmlAttribute(name="permission",namespace="http://schemas.android.com/apk/res/android")
 	public void setPermission(String permission) {
 		this.permission = permission;
 	}
+	
 	public String getAuthorities() {
 		return authorities;
 	}
-	@XmlAttribute(name="authorities",namespace="http://schemas.android.com/apk/res/android")
 	public void setAuthorities(String authorities) {
 		this.authorities = authorities;
 	}
 	public boolean isExported() {
 		return isExported;
 	}
-	@XmlAttribute(name="exported",namespace="http://schemas.android.com/apk/res/android")
+
 	public void setExported(boolean isExported) {
 		this.isExported = isExported;
 	}
-	public List<Intent> getIntent() {
+	public ArrayList<Intent> getIntent() {
 		return intent;
 	}
-	public void setIntent(List<Intent> intent) {
+	public void setIntent(ArrayList<Intent> intent) {
 		this.intent = intent;
 	}
 	

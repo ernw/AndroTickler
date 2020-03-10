@@ -17,6 +17,8 @@ package manifest;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.AbstractMap.SimpleEntry;
+
 import components.Activity;
 import components.DataUri;
 import components.IComponent;
@@ -64,7 +66,8 @@ public class ManifestAnalyzer {
 		this.exported = new ArrayList<IComponent>();
 		this.hidden = new ArrayList<IComponent>();
 		
-		this.decideExportedStatus();
+		// Probably not needed because isExposed is decided during parsing XML
+//		this.decideExportedStatus();
 		
 		for(IComponent c : this.components) {
 			if (c.isExported())
@@ -77,19 +80,20 @@ public class ManifestAnalyzer {
 	
 	/**
 	 * Sets isExported, based on exported field in manifest and existence of implicit intents
+	 * Not called anymore because the decision on exported or not happens during parsing hte manifest file 
 	 */
-	public void decideExportedStatus() {
-		for(IComponent c : this.components) {
-			if ( c.isExported()) 
-				c.setExported(true);
-			else if (c.getExp() != null && c.getExp().equals("true"))
-				c.setExported(true);
-			else if (c.getExp()==null && c.getIntent()!=null)
-				c.setExported(true);
-			else
-				c.setExported(false);
-		}
-	}
+//	public void decideExportedStatus() {
+//		for(IComponent c : this.components) {
+//			if ( c.isExported()) 
+//				c.setExported(true);
+//			else if (c.isExported()!= null && c.isExported())
+//				c.setExported(true);
+//			else if (c.getExp()==null && c.getIntent()!=null)
+//				c.setExported(true);
+//			else
+//				c.setExported(false);
+//		}
+//	}
 		
 	public IComponent getComponentByName(String compName){
 		String name;
@@ -128,6 +132,24 @@ public class ManifestAnalyzer {
 		}
 		
 		return result;	
+	}
+	
+	/**
+	 * New: Get Permissions defined in all components
+	 * @return ArrayList<SimpleEntry<comp.name,permission.name>>
+	 */
+	
+	public ArrayList<SimpleEntry> getComponentPermissions(){
+		ArrayList<SimpleEntry> permissions = new ArrayList();
+		for (IComponent c:this.components) {
+			if(c.getPermission()!=null && ! c.getPermission().isEmpty()) {
+				SimpleEntry e = new SimpleEntry<String, String>(c.getName(), c.getPermission());
+				permissions.add(e);
+			}
+		}
+		
+		return permissions;
+		
 	}
 	
 	
