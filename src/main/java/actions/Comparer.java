@@ -72,8 +72,11 @@ public class Comparer {
 		this.dataDirOld = this.storageOld+TicklerConst.DATA_DIR_NAME;
 		this.extDirOld = this.storageOld+TicklerConst.EXTERNAL_STORAGE_Dir;
 		
+		String old_storage=TicklerConst.DIFF_OLD_STORAGE.substring(0, TicklerConst.DIFF_OLD_STORAGE.length()-1);
+		
 		this.clearDataDirs();
-		this.copyz.copyStorage(TicklerConst.DIFF_OLD_STORAGE);
+//		this.copyz.copyStorage(TicklerConst.DIFF_OLD_STORAGE);
+		this.copyz.copyStorage(old_storage);
 		
 		System.out.println("\n\n>>>>>>>>>>>>>>>> Go crazy then press Enter to compare data directories....\n");
 		OtherUtil.pressAnyKeySilent();

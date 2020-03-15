@@ -215,8 +215,9 @@ In case of vals and set options, Frida creates/updates a Frida script of that fu
 
 ## Modify Arguments or Return Value
     java -jar AndroTickler.jar -pkg <package> -frida set <ClassName> <MethodName> <NumberOfArgs> <NumberOfArgToModify> <newValue>[-reuse]
-Sets the argument number *NumberOfArgToModify* to *newValue* (only primitive datatypes and String). *NumberOfArgToModify* starts with 0: First argument --> arg number 0 
-If *NumberOfArgToModify* >= *NumberOfArgs*: sets the return value
+Sets the argument number *NumberOfArgToModify* to *newValue* (only primitive datatypes and String). 
+*NumberOfArgToModify* starts with 0: First argument --> NumberOfArgToModify = 0, ...etc 
+To modify return value --> set NumberOfArgToModify to *ret*
  
 
 ## Run JS Frida script

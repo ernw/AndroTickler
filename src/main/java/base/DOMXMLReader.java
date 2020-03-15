@@ -189,13 +189,7 @@ public class DOMXMLReader {
     		compy.setName(element.getAttribute("android:name"));
     		compy.setPermission(element.getAttribute("android:permission"));
     		
-    		if(element.hasAttribute("android:exported") && element.getAttribute("android:exported").toLowerCase().equals("true")) {
-    			compy.setExported(true);
-    		}
-    		else
-    			compy.setExported(false);
-			
-    		
+
     		
 			//Intent Filters
 
@@ -208,6 +202,15 @@ public class DOMXMLReader {
     		compy.setIntent(intFilList);
     		
 
+    		//Exported
+    		if((element.hasAttribute("android:exported") && element.getAttribute("android:exported").toLowerCase().equals("true")) || ! intFilList.isEmpty() ) {
+    			compy.setExported(true);
+    		}
+    		else
+    			compy.setExported(false);
+			
+    		
+    		
 		}
 
 		return compy;

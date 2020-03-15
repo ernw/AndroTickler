@@ -73,15 +73,18 @@ public class FridaSetValue {
 		
 		tempCode = tempCode.replaceAll("\\$args", methodArguments);
 		
-		int numberOfTarget = new Integer(args.get(4));
+		
+		
+		
 		String newValue = this.correctStringsInArgs(args.get(5));
 		
-		if (numberOfTarget>=numberOfArgs) {
+		if (this.isSetReturnValue(args.get(4))) {
 			//Modify return value
 			tempCode = tempCode.replaceAll("\\$returnValue", newValue);
 			tempCode = tempCode.replaceAll("\\$output_line", "console.log(\"Old return value: \"+orig_return.toString()+ \". New return value: \"+"+newValue+");");
 		}
 		else {
+			int numberOfTarget = new Integer(args.get(4));
 			//Modify an argument
 			String newArgs = this.getNewArgs(numberOfArgs,numberOfTarget,newValue);
 			tempCode = tempCode.replaceAll("\\$returnValue", "this."+args.get(2)+newArgs);
@@ -128,6 +131,13 @@ public class FridaSetValue {
 		
 		return methodArgs;
 		
+	}
+	
+	private boolean isSetReturnValue(String arg4) {
+		if (arg4.equals("ret"))
+			return true;
+		
+		return false;
 	}
 	
 }

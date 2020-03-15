@@ -289,6 +289,7 @@ public class FileUtil {
 			String srcName = this.getFileNameFromPath(src);
 			this.deleteDirFromDevice(TicklerVars.sdCardPath+srcName);
 			this.copyOnDevice(src, TicklerVars.sdCardPath);
+			this.prepareDestination(dest);
 			this.pullFromSDcard(TicklerVars.sdCardPath+srcName, dest+"/");
 			File f = new File(TicklerVars.sdCardPath+srcName);
 			//Clean (uncommented)
@@ -341,6 +342,10 @@ public class FileUtil {
 		return timestamp;
 	}
 	
+	private void prepareDestination(String dst) {
+		File destFile = new File(dst);
+		this.createDirOnHost(dst);		
+	}
 	
 
 
