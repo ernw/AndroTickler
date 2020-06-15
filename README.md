@@ -26,8 +26,8 @@ Other tools are required for some features, but AndroTickler can still run witho
 - Frida
 - jarsigner
 
-How to use it
-=============
+How to build it
+================
 1) Build tool from code
 
 	gradle build
@@ -36,7 +36,7 @@ How to use it
 3) Set dex2jar to executable (libs/notJars//dex2jar-2.1/d2j-dex2jar.sh and libs/notJars//dex2jar-2.1/d2j_invoke.sh)
 4) Connect your Android device with the application-to-test installed on   
 
-If building the source code fails, you can download the latest compiled release from the releases tab
+**Note**: If building the source code fails, you can download the latest compiled release from the [releases](https://github.com/ernw/AndroTickler/releases) tab
 
 The current version does the following:
 
