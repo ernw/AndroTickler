@@ -108,7 +108,7 @@ public class JavaSqueezer {
 		this.logInCode();
 		this.testDisclosure();
 //		this.getStringsInCode();
-		this.squeezeJSon();
+//		this.squeezeJSon();
 		
 		OutBut.printStep("Where [Java_Code_Dir] is "+this.codeRoot);
 		
@@ -519,23 +519,61 @@ public class JavaSqueezer {
 		return false;
 	}
 	
-	public void squeezeJSon() {
+	public void squeezeJson(String filePath) {
 		JsonParser jp = new JsonParser();
-		ArrayList<SimpleEntry> eA;
+		ArrayList<SimpleEntry> eA,summaryArray;
+		SimpleEntry keyResult;
 		String[] searchKeys;
-		ArrayList<SimpleEntry<String,ArrayList<String>>> arr = jp.parseJsonString(this.jsonSq);
+		String json;
+		
+		try {
+			json=this.readSqueezeJson(filePath);
+		}
+		catch (IOException e) {
+			json=this.jsonSq;
+		}
+			
+		summaryArray=new ArrayList<AbstractMap.SimpleEntry>();
+		ArrayList<SimpleEntry<String,ArrayList<String>>> arr = jp.parseJsonString(json);
 		
 		for (SimpleEntry<String,ArrayList<String>> e : arr) {
-//			System.out.println(e.getKey());
-//			OtherUtil.printStringArray(e.getValue());
 			
 			OutBut.printH2(e.getKey());
 			Object[] aL = e.getValue().toArray();
 			searchKeys= Arrays.copyOf(aL, aL.length, String[].class);;
-			eA = this.returnFNameLineGroup(searchKeys, false);
 			
-			this.printE(this.removeDuplicatedSimpleEntries(eA));
+			
+			//To get the number of hits of each key in searchKeys
+			for (String key : searchKeys) {
+				String[] keyArr =  {key}; 
+				eA = this.returnFNameLineGroup(keyArr, false);
+				keyResult=new SimpleEntry<String, Integer>(key, eA.size());
+				summaryArray.add(keyResult);
+				this.printE(this.removeDuplicatedSimpleEntries(eA));
+			}
 		}
+			
+		//Print Summary
+		
+		OutBut.printH2("Results Summary");
+		for (SimpleEntry<String, Integer> e : summaryArray) {
+			OutBut.printNormal(e.getKey()+":\t"+e.getValue());
+		}
+				
+		
+		
+		
+//		catch(IOException e) {
+//			OutBut.printError("JSON File "+filePath+" does not exist");
+//		}
+		
+	}
+	
+	private String readSqueezeJson(String filePath) throws IOException {
+		FileUtil fU = new FileUtil();
+
+		return fU.readFile(filePath);
+
 	}
 	
 	/**

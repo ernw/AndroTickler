@@ -13,28 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package components;
+package components.old;
 
+import java.util.List;
 
-public class Permission {
+public interface IActivityService {
 
-	String name,protectionLevel;
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getProtectionLevel() {
-		return protectionLevel;
-	}
-
-	public void setProtectionLevel(String protectionLevel) {
-		this.protectionLevel = protectionLevel;
-	}
-	
-	
+	public List<Intent> getIntent();
+	public String getName();
 }

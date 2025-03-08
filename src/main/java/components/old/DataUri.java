@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package components;
+package components.old;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.xml.bind.annotation.XmlAttribute;
 /**
  * TODO: assume multiple mime-types, pathPrefixes
  * @author aabolhadid
@@ -30,46 +31,46 @@ public class DataUri {
 	public String getScheme() {
 		return scheme;
 	}
-
+	@XmlAttribute(name="scheme",namespace="http://schemas.android.com/apk/res/android")
 	public void setScheme(String scheme) {
 		this.scheme = scheme;
 	}
-
+	@XmlAttribute(name="host",namespace="http://schemas.android.com/apk/res/android")
 	public String getHost() {
 		return host;
 	}
 	public void setHost(String host) {
 		this.host = host;
 	}
-
+	@XmlAttribute(name="port",namespace="http://schemas.android.com/apk/res/android")
 	public String getPort() {
 		return port;
 	}
 	public void setPort(String port) {
 		this.port = port;
 	}
-
+	@XmlAttribute(name="path",namespace="http://schemas.android.com/apk/res/android")
 	public String getPath() {
 		return path;
 	}
 	public void setPath(String path) {
 		this.path = path;
 	}
-
+	@XmlAttribute(name="pathPrefix",namespace="http://schemas.android.com/apk/res/android")
 	public String getPathPrefix() {
 		return pathPrefix;
 	}
 	public void setPathPrefix(String pathPrefix) {
 		this.pathPrefix = pathPrefix;
 	}
-
+	@XmlAttribute(name="pathPattern",namespace="http://schemas.android.com/apk/res/android")
 	public String getPathPattern() {
 		return pathPattern;
 	}
 	public void setPathPattern(String pathPattern) {
 		this.pathPattern = pathPattern;
 	}
-
+	@XmlAttribute(name="mimeType",namespace="http://schemas.android.com/apk/res/android")
 	public String getMimeType() {
 		return mimeType;
 	}

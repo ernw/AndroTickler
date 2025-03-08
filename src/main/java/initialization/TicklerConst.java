@@ -53,7 +53,7 @@ public class TicklerConst {
 	public static int SERVICE=2;
 	public static int PROVIDER=3;
 	public static int RECEIVER=4;	
-	public static String version="2.4";
+	public static String version="2.7";
 	public static final int debuggable=0;
 	public static final int mitm=1;
 	public static String mitmApkName = "mitm.apk";

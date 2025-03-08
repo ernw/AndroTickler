@@ -18,8 +18,6 @@ package components;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 
 public class Service implements IComponent,IActivityService{
 	String name,exp, permission;

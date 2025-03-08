@@ -1,0 +1,87 @@
+	usage: Tickler	
+        ==============
+	Please make sure that the configuration file: Tickler.conf is at the same directory as
+	the Tickler .jar file. Tickler.conf file defines Tickler's directory on the host and the
+	temp directory on the android device.
+
+	Options
+	---------
+	-h, --help					Prints this message
+	-version					Print version
+    -screen						Take a screenshot of the device
+    -findPkg <key>				Search for a package name	
+	-pkgs						List all installed packages on the android device	
+    -offline					Offline Mode, no devices needed to be connected
+	-pkg						Specify package name of the app		
+		
+	Options of pkg:	
+	--------------	
+	-info						List information about the app	
+	-squeeze					All strings, log functions, possible credentials in decompiled APK	
+	-squeeze short				Limits the squeezed code to the developer's code (most libraries excluded)	
+	-dbg, --debuggable			Create a debuggable version of the app	
+	-apk <dir> <name>			Compiles a new apk from <dir> directory under the name of <name> 
+	-dataDir [name]				Copies data directory of app to Tickler Directory (DataDir or transfers/name)	
+	-diff						Copies app's data directory before and after a user's action, then diffs between them
+ 	-diff 	[d| detailed]		like diff, but also shows the changes in case a text file or an unecrypted database is changed
+	-db [option] [-nu]				Database checks. By default app's Data Dir is copied to host before checks
+ 		[-nu | --noUpdate]			Does not update DataDir on host before checks 
+ 		[option] can be:
+			[ |e|encryption]		Checks whether the database files of the app are encrypted or not
+			[l |list]				Lists Databases of the app 
+			[d |dump]				Dumps an unencrypted database
+			
+ 	-sc <key>					Search for "key" in the app's decompiled Java code
+ 	-sd <key> [-nu]				Pulls app's Data directory and searches for "key" in it
+ 			[-nu | --noUpdate]		Does not pull DataDir on host before search
+ 			
+	-t [target] [-log]			Tickels a target. The type of the attack depends on the target	
+ 	   -log							Captures logcat messages 
+	-l,--list [target] [-v]		List components of type target	
+	   -v 							List component(s) in details
+		
+		
+	Targets:	
+	--------	
+	-act,--activities		Activities	
+	-ser,--services			Services	
+	-prov,--providers		Content providers	
+	-rec,--receivers		Broadcast receivers	
+	[ | -comp] <name>		A specific component, its name has to be exactly as in Manifest file (also displayed by -l)	
+	-exp					Applies [trigger | list] action to exported components only	
+	[ | -all]				All components (default if none of the above targets are specified)	
+		
+	Options that work with and without -pkg option
+	-----------------------------------------------
+ 	-screen				Captures a screenshot of the device
+ 	-cp2host <source> [destName]	Copies any file/directory to the tickler's app directoy on the host
+ 	-bg,--bgSnapshots		Copies background screenshots that are saved on the device
+
+	Frida	
+	-----	
+	-frida enum 		
+		Enumerates loaded classes	
+	-frida vals <ClassName> <MethodName> <NumberOfArgs> [-reuse]	
+		Displays arguments and return value of this method (only primitive datatypes and String)	
+			
+	-frida set <ClassName> <MethodName> <NumberOfArgs> <NumberOfArgToModify> <newValue>[-reuse]	
+		Sets the argument number <NumberOfArgToModify> to <newValue> (only primitive datatypes and String)	
+		If <NumberOfArgToModify> > <NumberOfArgs>: sets the return value 	
+		
+	-frida script <scriptPath>
+		Run custom frida JS script 	
+
+	Examples:	
+	---------	
+	1) List all components of package com.test.package, with detailed information	
+	-----------------------------------------------------------------------------	
+	java -jar Tickler.jar -pkg com.test.package -l -v	
+		
+	2) Trigger exported activities of package com.test.package	
+	-----------------------------------------------------------	
+	java -jar Tickler.jar -pkg com.test.package -t -act -exp	
+
+	3) Squeeze app's decompiled Java code	for strings, log messages...etc
+	-----------------------------------------------------------------------	
+	java -jar Tickler.jar -pkg com.test.package -squeeze 
+		- output is automatically saved in squeeze.txt file in the app's directory

@@ -15,7 +15,7 @@
  ******************************************************************************/
 package components;
 
-import javax.xml.bind.annotation.XmlRootElement;
+
 
 public class Category {
 		String name;

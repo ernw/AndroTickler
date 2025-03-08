@@ -22,7 +22,6 @@ import apk.ApkToolDude;
 import apk.Decompiler;
 import base.DOMXMLReader;
 import base.FileUtil;
-import base.XMLReader;
 import cliGui.OutBut;
 import commandExec.Commando;
 import components.Activity;
@@ -40,7 +39,6 @@ import initialization.TicklerVars;
  */
 public class ManifestDealer {
 	private String manifestPath,pkgName,appTickDir;
-//	private XMLReader xmlreader;
 	private DOMXMLReader domXmlreader;
 	public ManifestAnalyzer manAn;
 	private FileUtil fileT;

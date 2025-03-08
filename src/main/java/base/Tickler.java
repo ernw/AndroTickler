@@ -219,6 +219,8 @@ public class Tickler {
 		//4- Set logger to True, in order to write the command in the file
 		this.startAttack.setLogger(this.isLog);
 		
+		//5- Init TicklerGeneral.schemes to complete dataURI Intents
+		TicklerGeneral.schemes = new ArrayList<String>();
 	}
 	
 
@@ -362,6 +364,12 @@ public class Tickler {
 			codeLoc = TicklerVars.jClassDir+"/"+subloc.replaceAll("\\.", "/");
 		}
 		disc.report(codeLoc);
+	}
+	
+	//Neglecting jsonFile at the moment
+	public void squeezeJSON(String jsonLoc) {
+		JavaSqueezer disc = new JavaSqueezer();
+		disc.squeezeJson(jsonLoc);
 	}
 	
 	/////////////// Search //////////////////

@@ -95,8 +95,8 @@ public class StartAttack extends Starter {
 				this.snaps.takeSnapshot();
 			}
 			
-			 
-			this.commando.execADB(this.broker.forceStopApp());
+			 // Do not terminate app between Tickles
+			//this.commando.execADB(this.broker.forceStopApp());
 			
 		}
 

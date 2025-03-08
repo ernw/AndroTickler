@@ -17,8 +17,6 @@ package components;
 
 import java.util.ArrayList;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 
 public class Receiver implements IComponent{
 	

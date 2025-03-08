@@ -17,6 +17,7 @@ package manifest.handlers;
 
 import java.util.ArrayList;
 
+import base.TicklerGeneral;
 import components.Action;
 import components.Category;
 import components.DataUri;
@@ -67,8 +68,12 @@ public class IntentHandler {
 			for (DataUri d : totalDU){
 				this.updateCommandsList(dH.getStartCommand(d));
 			}
+			
+			
+			
 			this.commands.addAll(this.additionalCommands);
 			this.additionalCommands.clear();
+			TicklerGeneral.schemes.clear();
 		}
 	}
 	

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2017 Ahmad Abolhadid
+ * Copyright 2019 Ahmad Abolhadid
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,28 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package components;
+package components.old;
 
+import java.util.ArrayList;
 
-public class Permission {
+public interface IComponent {
 
-	String name,protectionLevel;
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getProtectionLevel() {
-		return protectionLevel;
-	}
-
-	public void setProtectionLevel(String protectionLevel) {
-		this.protectionLevel = protectionLevel;
-	}
+	public boolean isExported();
+	public void setExported(boolean isExported);
+	public ArrayList<Intent> getIntent();
+	public String getName();
+	public String getPermission();
 	
-	
+	public void setName(String name);
+	public void setPermission(String permission);
+	public void setIntent(ArrayList<Intent> intentFilters);
+
 }

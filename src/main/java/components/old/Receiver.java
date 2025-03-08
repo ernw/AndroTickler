@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2017 Ahmad Abolhadid
+ * Copyright 2019 Ahmad Abolhadid
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,28 +13,53 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package components;
+package components.old;
 
+import java.util.ArrayList;
 
-public class Permission {
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
-	String name,protectionLevel;
-
+public class Receiver implements IComponent{
+	
+	boolean isExported;
+	String name,permission,exp;
+	ArrayList<Intent> intents;
+	
+	public boolean isExported() {
+		return isExported;
+	}
+	public void setExported(boolean isExported) {
+		this.isExported = isExported;
+	}
+	
+	public String getExp() {
+		return exp;
+	}
+	public void setExp(String exp) {
+		this.exp = exp;
+	}
+	
 	public String getName() {
 		return name;
 	}
-
 	public void setName(String name) {
 		this.name = name;
 	}
-
-	public String getProtectionLevel() {
-		return protectionLevel;
+	public String getPermission() {
+		return permission;
 	}
-
-	public void setProtectionLevel(String protectionLevel) {
-		this.protectionLevel = protectionLevel;
+	public void setPermission(String permission) {
+		this.permission = permission;
+	}
+	
+	public ArrayList<Intent> getIntent() {
+		return intents;
+	}
+	public void setIntent(ArrayList<Intent> intents) {
+		this.intents = intents;
 	}
 	
 	
+
 }

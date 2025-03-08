@@ -119,6 +119,9 @@ public class TicklerCLI {
 		frida.setOptionalArg(true);
 		frida.setArgs(6);
 		
+		Option squeezeJSON = OptionBuilder.create("sq");
+		squeezeJSON.setArgs(2);
+		
 		cli.options.addOption(pkg);
 		cli.options.addOption(trigger);
 		cli.options.addOption(all);
@@ -154,6 +157,8 @@ public class TicklerCLI {
 		cli.options.addOption(frida);
 		cli.options.addOption(fridaReuse);
 		cli.options.addOption(offline);
+		cli.options.addOption(squeezeJSON);
+		
 		
 		try {
 			
@@ -334,6 +339,11 @@ public class TicklerCLI {
 			else if (cl.hasOption("squeeze")){
 				String codeLoc = cl.getOptionValue("squeeze");
 				t.squeezeCode(codeLoc);
+			}
+			
+			else if (cl.hasOption("sq")){
+				String jsonLoc = cl.getOptionValue("sq");
+				t.squeezeJSON(jsonLoc);
 			}
 			
 			else if (cl.hasOption("dataDir")){

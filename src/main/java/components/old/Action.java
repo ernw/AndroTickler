@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2017 Ahmad Abolhadid
+ * Copyright 2019 Ahmad Abolhadid
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package components;
+package components.old;
 
 
-public class Permission {
 
-	String name,protectionLevel;
+public class Action {
+	String name;
 
 	public String getName() {
 		return name;
@@ -27,14 +27,9 @@ public class Permission {
 	public void setName(String name) {
 		this.name = name;
 	}
-
-	public String getProtectionLevel() {
-		return protectionLevel;
-	}
-
-	public void setProtectionLevel(String protectionLevel) {
-		this.protectionLevel = protectionLevel;
-	}
 	
+	public String toString() {
+		return "Action: name: "+this.getName()+"\n";
+	}
 	
 }

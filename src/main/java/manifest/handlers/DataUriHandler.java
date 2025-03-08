@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import base.TicklerGeneral;
 import components.DataUri;
 import components.Intent;
 
@@ -282,16 +283,25 @@ public class DataUriHandler {
 		String cmd="";
 		if (d.getScheme()!=null && ! d.getScheme().isEmpty()) {
 			cmd = " -d \""+d.getScheme()+"://";
+			TicklerGeneral.schemes.add(d.getScheme());
+		}
+		// If scheme is not in the same data entry, it might be declared in a previous or a next one.
 		
+		else if (!TicklerGeneral.schemes.isEmpty() /*&& !TicklerGeneral.schemes.contains("://")*/) {
+			cmd = " -d \""+TicklerGeneral.schemes.get(0)+"://";
+		}
+		//Therefore add a dummy $scheme now and we'll replace it later
+		else {
+			cmd = " -d \"$scheme://";
+		}
 		// If a scheme is not specified for the intent filter, all the other URI attributes are ignored.
 		// https://developer.android.com/guide/topics/manifest/data-element
+		// Update: 10.21 --> This is false, because scheme could be defined in another XML entity. Don't ignore
 			if (d.getHost()!=null && !d.getHost().isEmpty()){
 				String newVal=this.replaceAstrexInPathValues(d.getHost());
-				cmd = cmd+newVal;
-				}
-			else {
-				cmd=cmd+"TiCkLeR";
+				cmd = cmd+newVal+"/";
 			}
+
 			
 			if (d.getPort()!=null && !d.getPort().equals("*") && !d.getPort().isEmpty())
 				cmd = cmd+ ":"+d.getPort();
@@ -308,13 +318,22 @@ public class DataUriHandler {
 			
 			if (d.getPathPrefix()!=null && !d.getPathPrefix().equals("*"))
 				cmd = cmd+ d.getPathPrefix();
+		//}
+		if (!cmd.isEmpty()) {
+			cmd = cmd+"TiCkLeR\"";
 		}
-		if (!cmd.isEmpty())
-			cmd = cmd+"\"";
 		
 			if (d.getMimeType()!=null && ! d.getMimeType().isEmpty())
 				cmd = cmd+" -t " +d.getMimeType();
-		
+			
+			
+		//if dataURI is empty then cmd is empty. It will be removed later	
+		if (cmd.equals(" -d \"$scheme://TiCkLeR\"")) {
+			cmd="";
+		}
+			
+			
+			
 		return cmd;
 		
 	}

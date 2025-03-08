@@ -13,28 +13,57 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package components;
+package components.old;
 
+import java.util.ArrayList;
+import java.util.List;
 
-public class Permission {
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
-	String name,protectionLevel;
-
+public class Service implements IComponent,IActivityService{
+	String name,exp, permission;
+	boolean isExported;
+	ArrayList<Intent> intent;
+	
+	public Service() {
+		this.isExported = false;
+	}
+	
 	public String getName() {
 		return name;
 	}
-
 	public void setName(String name) {
 		this.name = name;
 	}
-
-	public String getProtectionLevel() {
-		return protectionLevel;
+	
+	public String getExp() {
+		return exp;
+	}
+	public void setExp(String exp) {
+		this.exp = exp;
 	}
 
-	public void setProtectionLevel(String protectionLevel) {
-		this.protectionLevel = protectionLevel;
+	public boolean isExported() {
+		return isExported;
 	}
 	
+	public void setExported(boolean isExported) {
+		this.isExported = isExported;
+	}
 	
+	public ArrayList<Intent> getIntent() {
+		return intent;
+	}
+	public void setIntent(ArrayList<Intent> intent) {
+		this.intent = intent;
+	}
+	
+	public String getPermission() {
+		return permission;
+	}
+	public void setPermission(String permission) {
+		this.permission = permission;
+	}
+
 }
